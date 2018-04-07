@@ -21,24 +21,13 @@
  */
 
 import React from 'react';
-import { render } from 'react-dom';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
+import ReactDOM from 'react-dom';
 
-import App from './containers/app';
-import i18n from './i18n';
-import registerServiceWorker from './registerServiceWorker';
-import configureStore from './store/configureStore';
+import App from './App';
 
-const store = configureStore();
+it('renders without crashing', () => {
+  const div = document.createElement('div');
 
-render(
-  <I18nextProvider i18n={i18n}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </I18nextProvider>,
-  document.getElementById('root')
-);
-
-registerServiceWorker();
+  ReactDOM.render(<App />, div);
+  ReactDOM.unmountComponentAtNode(div);
+});

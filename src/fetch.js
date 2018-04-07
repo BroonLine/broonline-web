@@ -20,25 +20,19 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
+import fetchPonyfill from 'fetch-ponyfill';
+// TODO: Test polyfill is needed
+import { Promise } from 'es6-promise';
 
-import App from './containers/app';
-import i18n from './i18n';
-import registerServiceWorker from './registerServiceWorker';
-import configureStore from './store/configureStore';
+const ponyfill = typeof fetch === 'undefined' ? fetchPonyfill({ Promise }) : null;
+const safeFetch = ponyfill ? ponyfill.fetch : fetch;
+const SafeHeaders = ponyfill ? ponyfill.Headers : Headers;
+const SafeRequest = ponyfill ? ponyfill.Request : Request;
+const SafeResponse = ponyfill ? ponyfill.Response : Response;
 
-const store = configureStore();
-
-render(
-  <I18nextProvider i18n={i18n}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </I18nextProvider>,
-  document.getElementById('root')
-);
-
-registerServiceWorker();
+export {
+  safeFetch as default,
+  SafeHeaders as Headers,
+  SafeRequest as Request,
+  SafeResponse as Response
+};

@@ -20,25 +20,42 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
+import querystring from 'querystring';
 
-import App from './containers/app';
-import i18n from './i18n';
-import registerServiceWorker from './registerServiceWorker';
-import configureStore from './store/configureStore';
+import fetch from '../fetch';
 
-const store = configureStore();
+export const RECEIVE_PLACES = 'RECEIVE_PLACES';
+export const REQUEST_PLACES = 'REQUEST_PLACES';
 
-render(
-  <I18nextProvider i18n={i18n}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </I18nextProvider>,
-  document.getElementById('root')
-);
+export function fetchPlaces(query) {
+  return (dispatch) => {
+    dispatch(requestPlaces(query));
 
-registerServiceWorker();
+    const params = querystring.stringify(query);
+
+    return fetch(url(params ? `?${params}` : ''))
+      .then((res) => res.json())
+      .then((json) => dispatch(receivePlaces(query, json)))
+      .catch((error) => dispatch(receivePlaces(query, { errors: [ error ] })));
+  };
+}
+
+function receivePlaces(query, json) {
+  return {
+    type: RECEIVE_PLACES,
+    errors: json.errors || [],
+    places: (json.data && json.data.places) || [],
+    query
+  };
+}
+
+function requestPlaces(query) {
+  return {
+    type: REQUEST_PLACES,
+    query
+  };
+}
+
+function url(str) {
+  return `${process.env.REACT_APP_API_HOST}/places${str}`;
+}

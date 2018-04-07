@@ -20,25 +20,24 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import Backend from 'i18next-xhr-backend';
+import { reactI18nextModule } from 'react-i18next';
 
-import App from './containers/app';
-import i18n from './i18n';
-import registerServiceWorker from './registerServiceWorker';
-import configureStore from './store/configureStore';
+i18n
+  .use(Backend)
+  .use(LanguageDetector)
+  .use(reactI18nextModule)
+  .init({
+    fallbackLng: 'en',
+    load: 'languageOnly',
+    interpolation: {
+      escapeValue: false
+    },
+    react: {
+      wait: true
+    }
+  });
 
-const store = configureStore();
-
-render(
-  <I18nextProvider i18n={i18n}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </I18nextProvider>,
-  document.getElementById('root')
-);
-
-registerServiceWorker();
+export default i18n;

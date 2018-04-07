@@ -20,25 +20,34 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
+import React, { Component, Fragment } from 'react';
+import fontAwesome from '@fortawesome/fontawesome';
+import fontAwesomeBrands from '@fortawesome/fontawesome-free-brands';
+import fontAwesomeSolid from '@fortawesome/fontawesome-free-solid';
 
-import App from './containers/app';
-import i18n from './i18n';
-import registerServiceWorker from './registerServiceWorker';
-import configureStore from './store/configureStore';
+import 'normalize.css';
 
-const store = configureStore();
+import Map from '../../components/map';
+import NavBar from '../../components/navbar';
 
-render(
-  <I18nextProvider i18n={i18n}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </I18nextProvider>,
-  document.getElementById('root')
-);
+import './App.css';
 
-registerServiceWorker();
+fontAwesome.library.add(fontAwesomeBrands, fontAwesomeSolid);
+
+class App extends Component {
+
+  render() {
+    return (
+      <Fragment>
+        <NavBar />
+
+        <main>
+          <Map />
+        </main>
+      </Fragment>
+    );
+  }
+
+}
+
+export default App;

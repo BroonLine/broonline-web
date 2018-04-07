@@ -1,0 +1,35 @@
+{
+  "title": "broonline",
+  "nav": {
+    "link": {
+      "facebook": {
+        "text": "Facebook",
+        "title": "Share on $t(nav.link.facebook.text)"
+      },
+      "github": {
+        "text": "GitHub",
+        "title": "View source on $t(nav.link.github.text)"
+      },
+      "googleplus": {
+        "text": "Google+",
+        "title": "Share on $t(nav.link.googleplus.text)"
+      },
+      "info": {
+        "text": "Information",
+        "title": "WTF!?"
+      },
+      "stumbleupon": {
+        "text": "StumbleUpon",
+        "title": "Share on $t(nav.link.stumbleupon.text)"
+      },
+      "support": {
+        "text": "Support",
+        "title": "Need help?"
+      },
+      "twitter": {
+        "text": "Twitter",
+        "title": "Share on $t(nav.link.twitter.text)"
+      }
+    }
+  }
+}

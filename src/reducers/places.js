@@ -20,25 +20,42 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
+// TODO: Add answer action
 
-import App from './containers/app';
-import i18n from './i18n';
-import registerServiceWorker from './registerServiceWorker';
-import configureStore from './store/configureStore';
+import {
+  RECEIVE_PLACES,
+  REQUEST_PLACES
+} from '../actions/places';
 
-const store = configureStore();
+function places(
+  state = {
+    errors: [],
+    fetching: false,
+    places: [],
+    query: {
+      dominant: 'yes'
+    }
+  },
+  action
+) {
+  // TODO: Test polyfill of Object.assign
+  switch (action.type) {
+  case RECEIVE_PLACES:
+    return Object.assign({}, state, {
+      errors: action.errors,
+      fetching: false,
+      places: action.places,
+      query: action.query
+    });
+  case REQUEST_PLACES:
+    return Object.assign({}, state, {
+      errors: [],
+      fetching: true,
+      query: action.query
+    });
+  default:
+    return state;
+  }
+}
 
-render(
-  <I18nextProvider i18n={i18n}>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </I18nextProvider>,
-  document.getElementById('root')
-);
-
-registerServiceWorker();
+export default places;
