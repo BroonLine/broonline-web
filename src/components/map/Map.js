@@ -112,7 +112,7 @@ class Map extends Component {
   render() {
     return (
       <InternalMap
-        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places,visualization&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&signed_in=true`}
+        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places,visualization&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`}
         containerElement={<div className="map-container" />}
         loadingElement={<div className="map-loading">Loading</div>}
         mapElement={<div className="map" />}
