@@ -1,9 +1,0 @@
-[context.production.environment]
-REACT_APP_API_HOST = "https://api.broonline.uk"
-REACT_APP_GOOGLE_ANALYTICS_ID = "UA-62526358-2"
-REACT_APP_GOOGLE_MAPS_API_KEY = "AIzaSyArjTEWMV6lyyzgXjA1Pw6WipsEcElPnj8"
-
-[context.develop.environment]
-REACT_APP_API_HOST = "https://develop.api.broonline.uk"
-REACT_APP_GOOGLE_ANALYTICS_ID = "UA-62526358-3"
-REACT_APP_GOOGLE_MAPS_API_KEY = "AIzaSyD924qpT3tUVSgFB0mD2G7qmlcpl59l4kc"
