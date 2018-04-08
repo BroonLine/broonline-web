@@ -42,3 +42,9 @@
   user-select: none;
   overflow: hidden;
 }
+
+@media (min-width: 768px) {
+  .map-search {
+    padding: 8px;
+  }
+}
