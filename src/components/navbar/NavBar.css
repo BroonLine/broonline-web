@@ -48,7 +48,7 @@
   color: #ffffff;
   position: relative;
   background-color: #a0522d;
-  transition: padding-left 0.6s ease;
+  transition: padding-right 0.6s ease;
   clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
 }
 
@@ -87,11 +87,7 @@
 @media (min-width: 768px) {
   .navbar-title:focus,
   .navbar-title:hover {
-    padding-left: 100px;
-  }
-  .navbar-title:focus:after,
-  .navbar-title:hover:after {
-    border-left-color: #a0522d;
+    padding-right: 100px;
   }
 
   .navbar-links {
