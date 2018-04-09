@@ -32,6 +32,7 @@ i18n
   .use(reactI18nextModule)
   .init({
     fallbackLng: 'en',
+    whitelist: [ 'en' ],
     load: 'languageOnly',
     interpolation: {
       escapeValue: false

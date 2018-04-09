@@ -25,7 +25,7 @@
   height: calc(100vh - 62px);
 }
 
-.map-search {
+.map__search {
   position: relative;
   min-width: 220px;
   margin: 10px 0 0 0;
@@ -43,7 +43,7 @@
 }
 
 @media (min-width: 768px) {
-  .map-search {
+  .map__search {
     padding: 8px;
   }
 }

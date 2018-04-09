@@ -28,7 +28,7 @@ import './Overlay.css';
 class Overlay extends Component {
 
   render() {
-    return <div className="overlay">{this.props.children}</div>;
+    return <div className="container__overlay">{this.props.children}</div>;
   }
 
 }

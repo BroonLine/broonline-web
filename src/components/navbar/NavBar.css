@@ -35,11 +35,11 @@
   z-index: 1030;
 }
 
-.navbar-header {
+.navbar__header {
   float: left;
 }
 
-.navbar-title {
+.navbar__title {
   float: left;
   padding: 20px 30px 20px 15px;
   font-size: 26px;
@@ -52,45 +52,45 @@
   clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
 }
 
-.navbar-links {
+.navbar__links {
   display: none;
   float: right;
   margin: 15px;
 }
 
-.navbar-link {
+.navbar__link {
   color: #777777;
   margin-left: 10px;
 }
-.navbar-link[data-name='facebook']:hover {
+.navbar__link[data-name='facebook']:hover {
   color: #3b5998;
 }
-.navbar-link[data-name='github']:hover {
+.navbar__link[data-name='github']:hover {
   color: #171515;
 }
-.navbar-link[data-name='googleplus']:hover {
+.navbar__link[data-name='googleplus']:hover {
   color: #dd4b39;
 }
-.navbar-link[data-name='info']:hover {
+.navbar__link[data-name='info']:hover {
   color: #5bc0de;
 }
-.navbar-link[data-name='stumbleupon']:hover {
+.navbar__link[data-name='stumbleupon']:hover {
   color: #eb4823;
 }
-.navbar-link[data-name='support']:hover {
+.navbar__link[data-name='support']:hover {
   color: #d9534f;
 }
-.navbar-link[data-name='twitter']:hover {
+.navbar__link[data-name='twitter']:hover {
   color: #55acee;
 }
 
 @media (min-width: 768px) {
-  .navbar-title:focus,
-  .navbar-title:hover {
+  .navbar__title:focus,
+  .navbar__title:hover {
     padding-right: 100px;
   }
 
-  .navbar-links {
+  .navbar__links {
     display: block;
   }
 }

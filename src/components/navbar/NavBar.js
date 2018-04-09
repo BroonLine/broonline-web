@@ -36,8 +36,8 @@ class NavLink extends Component {
 
   render() {
     const { href, icon, internal, name, t } = this.props;
-    const text = t(`nav.link.${name}.text`);
-    const title = t(`nav.link.${name}.title`);
+    const text = t(`navbar.link.${name}.text`);
+    const title = t(`navbar.link.${name}.title`);
     let rel;
     let target;
 
@@ -48,7 +48,7 @@ class NavLink extends Component {
 
     return (
       <a
-        className="navbar-link"
+        className="navbar__link"
         href={href}
         rel={rel}
         target={target}
@@ -97,21 +97,19 @@ class NavBar extends Component {
 
     return (
       <nav className="navbar">
-        <div className="navbar-header">
-          <a className="navbar-title" href={host}>{t('title')}</a>
+        <div className="navbar__header">
+          <a className="navbar__title" href={host}>{t('title')}</a>
         </div>
 
-        <div className="navbar-links">
-          {this.links.map((link) => (
-            <NavLink
-              key={link.name}
-              href={link.href}
-              icon={link.icon}
-              internal={link.internal}
-              name={link.name}
-              t={t}
-            />
-          ))}
+        <div className="navbar__links">
+          {this.links.map((link) => <NavLink
+            key={link.name}
+            href={link.href}
+            icon={link.icon}
+            internal={link.internal}
+            name={link.name}
+            t={t}
+          />)}
         </div>
       </nav>
     );

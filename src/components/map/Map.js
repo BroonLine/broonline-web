@@ -28,6 +28,7 @@ import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { GoogleMap, Marker, withGoogleMap, withScriptjs } from 'react-google-maps';
 import HeatmapLayer from 'react-google-maps/lib/components/visualization/HeatmapLayer';
+import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -38,6 +39,7 @@ import Container, { Overlay } from '../container';
 import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
+  placeholder,
   places = [],
   position = { lat: 55.9410656, lng: -3.2053836 },
   zoom = 8
@@ -57,9 +59,9 @@ const InternalMap = withScriptjs(withGoogleMap(({
           controlPosition={google.maps.ControlPosition.TOP_LEFT}
         >
           <input
-            className="map-search"
+            className="map__search"
             type="text"
-            placeholder="Find a chippie"
+            placeholder={placeholder}
           />
         </Autocomplete>
         <HeatmapLayer
@@ -92,6 +94,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
 }));
 
 InternalMap.propTypes = {
+  placeholder: PropTypes.string.isRequired,
   places: PropTypes.array,
   position: PropTypes.shape({
     lat: PropTypes.number.isRequired,
@@ -109,13 +112,16 @@ class Map extends Component {
   }
 
   render() {
+    const { places, t } = this.props;
+
     return (
       <InternalMap
         googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places,visualization&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`}
-        containerElement={<div className="map-container" />}
+        containerElement={<Container />}
         loadingElement={<div className="map-loading">Loading</div>}
         mapElement={<div className="map" />}
-        places={this.props.places.places}
+        placeholder={t('map.search.placeholder')}
+        places={places.places}
       />
     );
   }
@@ -124,7 +130,8 @@ class Map extends Component {
 
 Map.propTypes = {
   fetchPlaces: PropTypes.func.isRequired,
-  places: PropTypes.object.isRequired
+  places: PropTypes.object.isRequired,
+  t: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
@@ -135,4 +142,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(placesActionCreators, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Map);
+export default connect(mapStateToProps, mapDispatchToProps)(translate()(Map));

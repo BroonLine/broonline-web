@@ -20,7 +20,10 @@
  * SOFTWARE.
  */
 
+import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
+import { Helmet } from 'react-helmet';
+import { translate } from 'react-i18next';
 import fontAwesome from '@fortawesome/fontawesome';
 import fontAwesomeBrands from '@fortawesome/fontawesome-free-brands';
 import fontAwesomeSolid from '@fortawesome/fontawesome-free-solid';
@@ -30,6 +33,7 @@ import 'normalize.css';
 import ErrorBoundary from '../../components/errorboundary';
 import Map from '../../components/map';
 import NavBar from '../../components/navbar';
+import i18n from '../../i18n';
 
 import './App.css';
 
@@ -38,8 +42,18 @@ fontAwesome.library.add(fontAwesomeBrands, fontAwesomeSolid);
 class App extends Component {
 
   render() {
+    const { t } = this.props;
+
     return (
       <Fragment>
+        <Helmet>
+          <html lang={i18n.language} />
+
+          <title>{t('title')}</title>
+
+          <meta name="description" content={t('description')} />
+        </Helmet>
+
         <NavBar />
 
         <main>
@@ -53,4 +67,8 @@ class App extends Component {
 
 }
 
-export default App;
+App.propTypes = {
+  t: PropTypes.func.isRequired
+};
+
+export default translate()(App);

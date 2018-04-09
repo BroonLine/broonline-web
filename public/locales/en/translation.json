@@ -1,19 +1,28 @@
 {
   "title": "Broon Line",
   "description": "Track where broon sauce is considered acceptable in chippies",
-  "nav": {
+  "error": {
+    "header": "Oops!",
+    "message": "Something went wrong."
+  },
+  "map": {
+    "search": {
+      "placeholder": "Find a chippie"
+    }
+  },
+  "navbar": {
     "link": {
       "facebook": {
         "text": "Facebook",
-        "title": "Share on $t(nav.link.facebook.text)"
+        "title": "Share on $t(navbar.link.facebook.text)"
       },
       "github": {
         "text": "GitHub",
-        "title": "View source on $t(nav.link.github.text)"
+        "title": "View source on $t(navbar.link.github.text)"
       },
       "googleplus": {
         "text": "Google+",
-        "title": "Share on $t(nav.link.googleplus.text)"
+        "title": "Share on $t(navbar.link.googleplus.text)"
       },
       "info": {
         "text": "Information",
@@ -21,7 +30,7 @@
       },
       "stumbleupon": {
         "text": "StumbleUpon",
-        "title": "Share on $t(nav.link.stumbleupon.text)"
+        "title": "Share on $t(navbar.link.stumbleupon.text)"
       },
       "support": {
         "text": "Support",
@@ -29,7 +38,7 @@
       },
       "twitter": {
         "text": "Twitter",
-        "title": "Share on $t(nav.link.twitter.text)"
+        "title": "Share on $t(navbar.link.twitter.text)"
       }
     }
   }

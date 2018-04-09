@@ -27,8 +27,6 @@ import { translate } from 'react-i18next';
 
 import Container, { Overlay } from '../container';
 
-import './ErrorBoundary.css';
-
 class ErrorBoundary extends Component {
 
   constructor(props) {
@@ -51,13 +49,12 @@ class ErrorBoundary extends Component {
     const { t } = this.props;
 
     // TODO: Improve format and styling of error
-    // TODO: Localize
     if (hasError) {
       return (
         <Container>
           <Overlay>
-            <h1>Oops!</h1>
-            <p>Something went wrong.</p>
+            <h1>{t('error.header')}</h1>
+            <p>{t('error.message')}</p>
           </Overlay>
         </Container>
       );
@@ -69,7 +66,10 @@ class ErrorBoundary extends Component {
 }
 
 ErrorBoundary.propTypes = {
-  children: PropTypes.arrayOf(PropTypes.element),
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.element),
+    PropTypes.element
+  ]),
   t: PropTypes.func.isRequired
 };
 

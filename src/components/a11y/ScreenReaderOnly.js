@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import './ScreenReaderOnly.css';
@@ -27,9 +28,17 @@ import './ScreenReaderOnly.css';
 class ScreenReaderOnly extends Component {
 
   render() {
-    return <span className='screen-reader-only'>{this.props.children}</span>;
+    return <span className="screen-reader-only">{this.props.children}</span>;
   }
 
 }
+
+ScreenReaderOnly.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.element),
+    PropTypes.element,
+    PropTypes.string
+  ])
+};
 
 export default ScreenReaderOnly;
