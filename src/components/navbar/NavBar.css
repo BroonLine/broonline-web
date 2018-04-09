@@ -25,7 +25,6 @@
   top: 0;
   right: 0;
   left: 0;
-  font-family: Lobster, sans-serif;
   min-height: 60px;
   height: 62px;
   margin-bottom: 20px;
@@ -42,7 +41,10 @@
 .navbar__title {
   float: left;
   padding: 20px 30px 20px 15px;
+  font-family: 'Lobster Two', sans-serif;
   font-size: 26px;
+  font-style: italic;
+  font-weight: bold;
   line-height: 20px;
   height: 60px;
   color: #ffffff;

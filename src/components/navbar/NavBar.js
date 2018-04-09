@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { translate } from 'react-i18next';
 
-import 'typeface-lobster/index.css';
+import 'typeface-lobster-two/index.css';
 
 import { ScreenReaderOnly } from '../a11y';
 import { host } from '../../config';
