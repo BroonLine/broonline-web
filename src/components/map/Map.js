@@ -22,8 +22,6 @@
 
 /* global google */
 
-// TODO: Derive position from geolocation if possible
-
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { GoogleMap, Marker, withGoogleMap, withScriptjs } from 'react-google-maps';
@@ -42,7 +40,7 @@ import './Map.css';
 const InternalMap = withScriptjs(withGoogleMap(({
   placeholder,
   places = [],
-  position = { lat: 55.9410656, lng: -3.2053836 },
+  position,
   zoom = 8
 }) => {
   const data = places.map((place) => {
@@ -50,46 +48,44 @@ const InternalMap = withScriptjs(withGoogleMap(({
   });
 
   return (
-    <Fragment>
-      <GoogleMap
-        defaultCenter={position}
-        defaultZoom={zoom}
+    <GoogleMap
+      defaultCenter={position}
+      defaultZoom={zoom}
+    >
+      <Autocomplete
+        controlPosition={google.maps.ControlPosition.TOP_LEFT}
       >
-        <Autocomplete
-          controlPosition={google.maps.ControlPosition.TOP_LEFT}
-        >
-          <input
-            className="map__search"
-            type="text"
-            placeholder={placeholder}
-          />
-        </Autocomplete>
-        <HeatmapLayer
-          data={data}
-          options={{
-            gradient: [
-              'rgba(160, 82, 45, 0)',
-              'rgba(160, 82, 45, 0)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)',
-              'rgba(160, 82, 45, 1)'
-            ],
-            maxIntensity: 1,
-            opacity: 0.75,
-            radius: 25
-          }}
+        <input
+          className="map__search"
+          type="text"
+          placeholder={placeholder}
         />
-      </GoogleMap>
-    </Fragment>
+      </Autocomplete>
+      <HeatmapLayer
+        data={data}
+        options={{
+          gradient: [
+            'rgba(160, 82, 45, 0)',
+            'rgba(160, 82, 45, 0)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)',
+            'rgba(160, 82, 45, 1)'
+          ],
+          maxIntensity: 1,
+          opacity: 0.75,
+          radius: 25
+        }}
+      />
+    </GoogleMap>
   );
 }));
 
@@ -99,27 +95,29 @@ InternalMap.propTypes = {
   position: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
-  }),
+  }).isRequired,
   zoom: PropTypes.number
 };
 
 class Map extends Component {
 
   componentDidMount() {
-    const { fetchPlaces } = this.props;
+    const { fetchPlaces, getPosition } = this.props;
 
     fetchPlaces({ dominant: 'yes' });
+    getPosition();
   }
 
   render() {
     const { places, t } = this.props;
+
     const loader = <Container center>
       <Overlay>
         <Loader />
       </Overlay>
     </Container>;
 
-    if (places.isFetching) {
+    if (places.isFetching || !places.position) {
       return loader;
     }
 
@@ -131,6 +129,7 @@ class Map extends Component {
         mapElement={<div className="map" />}
         placeholder={t('map.search.placeholder')}
         places={places.places}
+        position={places.position}
       />
     );
   }
@@ -139,6 +138,7 @@ class Map extends Component {
 
 Map.propTypes = {
   fetchPlaces: PropTypes.func.isRequired,
+  getPosition: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired
 };

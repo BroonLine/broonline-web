@@ -24,6 +24,7 @@
 
 import {
   RECEIVE_PLACES,
+  RECEIVE_POSITION,
   REQUEST_PLACES
 } from '../actions/places';
 
@@ -32,6 +33,7 @@ function places(
     errors: [],
     isFetching: false,
     places: [],
+    position: null,
     query: {
       dominant: 'yes'
     }
@@ -46,6 +48,10 @@ function places(
       isFetching: false,
       places: action.places,
       query: action.query
+    });
+  case RECEIVE_POSITION:
+    return Object.assign({}, state, {
+      position: action.position
     });
   case REQUEST_PLACES:
     return Object.assign({}, state, {

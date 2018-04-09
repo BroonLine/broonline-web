@@ -25,7 +25,26 @@ import querystring from 'querystring';
 import fetch from '../fetch';
 
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
+export const RECEIVE_POSITION = 'RECEIVE_POSITION';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
+
+export function getPosition() {
+  return (dispatch) => {
+    const defaultAction = receivePosition({
+      latitude: 56.074968,
+      longitude: -3.4633847
+    });
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => dispatch(receivePosition(position.coords)),
+        () => dispatch(defaultAction)
+      );
+    } else {
+      dispatch(defaultAction);
+    }
+  };
+}
 
 export function fetchPlaces(query) {
   return (dispatch) => {
@@ -46,6 +65,16 @@ function receivePlaces(query, json) {
     errors: json.errors || [],
     places: (json.data && json.data.places) || [],
     query
+  };
+}
+
+function receivePosition(coords) {
+  return {
+    type: RECEIVE_POSITION,
+    position: {
+      lat: coords.latitude,
+      lng: coords.longitude
+    }
   };
 }
 
