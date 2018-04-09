@@ -25,14 +25,13 @@
   top: 0;
   right: 0;
   left: 0;
-  font-family: 'Lobster', cursive;
+  font-family: Lobster, sans-serif;
   min-height: 60px;
   height: 62px;
   margin-bottom: 20px;
   background-color: #fff;
-  border: 1px solid #a0522d;
+  border-bottom: 2px solid #a0522d;
   border-radius: 0;
-  border-width: 0 0 2px 0;
   z-index: 1030;
 }
 
@@ -42,26 +41,15 @@
 
 .navbar-title {
   float: left;
-  padding: 20px 15px;
-  font-size: 18px;
+  padding: 20px 30px 20px 15px;
+  font-size: 26px;
   line-height: 20px;
   height: 60px;
   color: #ffffff;
   position: relative;
   background-color: #a0522d;
-  font-size: 26px;
   transition: padding-left 0.6s ease;
-}
-.navbar-title:after {
-  content: '';
-  position: absolute;
-  right: -30px;
-  top: 0;
-  width: 0;
-  height: 0;
-  border-top: 30px solid transparent;
-  border-bottom: 30px solid transparent;
-  border-left: 30px solid #a0522d;
+  clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%);
 }
 
 .navbar-links {
