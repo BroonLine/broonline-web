@@ -20,33 +20,57 @@
  * SOFTWARE.
  */
 
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-xhr-backend';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactGA from 'react-ga';
-import { reactI18nextModule } from 'react-i18next';
+import { translate } from 'react-i18next';
 
-i18n
-  .use(Backend)
-  .use(LanguageDetector)
-  .use(reactI18nextModule)
-  .init({
-    fallbackLng: 'en',
-    load: 'languageOnly',
-    interpolation: {
-      escapeValue: false
-    },
-    debug: process.env.NODE_ENV !== 'production',
-    react: {
-      wait: true
+import Container, { Overlay } from '../container';
+
+import './ErrorBoundary.css';
+
+class ErrorBoundary extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = { hasError: false };
+  }
+
+  componentDidCatch(error) {
+    this.setState({ hasError: true });
+
+    ReactGA.exception({
+      description: error.message,
+      fatal: true
+    });
+  }
+
+  render() {
+    const { hasError } = this.state;
+    const { t } = this.props;
+
+    // TODO: Improve format and styling of error
+    // TODO: Localize
+    if (hasError) {
+      return (
+        <Container>
+          <Overlay>
+            <h1>Oops!</h1>
+            <p>Something went wrong.</p>
+          </Overlay>
+        </Container>
+      );
     }
-  });
 
-i18n.on('failedLoading', (lng, ns, msg) => {
-  ReactGA.exception({
-    description: msg,
-    fatal: false
-  });
-});
+    return this.props.children;
+  }
 
-export default i18n;
+}
+
+ErrorBoundary.propTypes = {
+  children: PropTypes.arrayOf(PropTypes.element),
+  t: PropTypes.func.isRequired
+};
+
+export default translate()(ErrorBoundary);

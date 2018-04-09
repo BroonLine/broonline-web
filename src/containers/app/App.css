@@ -35,12 +35,12 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #333333;
+  color: #333;
   padding: 62px 0 0;
 }
 
 main {
-  background-color: #eeeeee;
+  background-color: #eee;
 }
 
 a {

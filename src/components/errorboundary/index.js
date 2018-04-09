@@ -20,33 +20,6 @@
  * SOFTWARE.
  */
 
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-xhr-backend';
-import ReactGA from 'react-ga';
-import { reactI18nextModule } from 'react-i18next';
+import ErrorBoundary from './ErrorBoundary';
 
-i18n
-  .use(Backend)
-  .use(LanguageDetector)
-  .use(reactI18nextModule)
-  .init({
-    fallbackLng: 'en',
-    load: 'languageOnly',
-    interpolation: {
-      escapeValue: false
-    },
-    debug: process.env.NODE_ENV !== 'production',
-    react: {
-      wait: true
-    }
-  });
-
-i18n.on('failedLoading', (lng, ns, msg) => {
-  ReactGA.exception({
-    description: msg,
-    fatal: false
-  });
-});
-
-export default i18n;
+export default ErrorBoundary;

@@ -20,33 +20,24 @@
  * SOFTWARE.
  */
 
-import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-xhr-backend';
-import ReactGA from 'react-ga';
-import { reactI18nextModule } from 'react-i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-i18n
-  .use(Backend)
-  .use(LanguageDetector)
-  .use(reactI18nextModule)
-  .init({
-    fallbackLng: 'en',
-    load: 'languageOnly',
-    interpolation: {
-      escapeValue: false
-    },
-    debug: process.env.NODE_ENV !== 'production',
-    react: {
-      wait: true
-    }
-  });
+import './Container.css';
 
-i18n.on('failedLoading', (lng, ns, msg) => {
-  ReactGA.exception({
-    description: msg,
-    fatal: false
-  });
-});
+class Container extends Component {
 
-export default i18n;
+  render() {
+    return <div className="container">{this.props.children}</div>;
+  }
+
+}
+
+Container.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.element),
+    PropTypes.element
+  ])
+};
+
+export default Container;

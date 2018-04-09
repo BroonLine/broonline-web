@@ -31,10 +31,9 @@ import HeatmapLayer from 'react-google-maps/lib/components/visualization/Heatmap
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import 'typeface-roboto/index.css';
-
 import * as placesActionCreators from '../../actions/places';
 import Autocomplete from './Autocomplete';
+import Container, { Overlay } from '../container';
 
 import './Map.css';
 

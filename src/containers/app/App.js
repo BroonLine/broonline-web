@@ -27,6 +27,7 @@ import fontAwesomeSolid from '@fortawesome/fontawesome-free-solid';
 
 import 'normalize.css';
 
+import ErrorBoundary from '../../components/errorboundary';
 import Map from '../../components/map';
 import NavBar from '../../components/navbar';
 
@@ -42,7 +43,9 @@ class App extends Component {
         <NavBar />
 
         <main>
-          <Map />
+          <ErrorBoundary>
+            <Map />
+          </ErrorBoundary>
         </main>
       </Fragment>
     );
