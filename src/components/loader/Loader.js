@@ -22,23 +22,30 @@
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { translate } from 'react-i18next';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
-import './Overlay.css';
+import { ScreenReaderOnly } from '../a11y';
 
-class Overlay extends Component {
+import './Loader.css';
+
+class Loader extends Component {
 
   render() {
-    return <div className="container__overlay">{this.props.children}</div>;
+    const { t } = this.props;
+
+    return (
+      <div className="loader">
+        <FontAwesomeIcon icon="spinner" size="6x" pulse />
+        <ScreenReaderOnly>{t('loader.text')}</ScreenReaderOnly>
+      </div>
+    );
   }
 
 }
 
-Overlay.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
-    PropTypes.element,
-    PropTypes.string
-  ])
+Loader.propTypes = {
+  t: PropTypes.func.isRequired
 };
 
-export default Overlay;
+export default translate()(Loader);

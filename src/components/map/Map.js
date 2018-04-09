@@ -35,6 +35,7 @@ import { bindActionCreators } from 'redux';
 import * as placesActionCreators from '../../actions/places';
 import Autocomplete from './Autocomplete';
 import Container, { Overlay } from '../container';
+import Loader from '../loader';
 
 import './Map.css';
 
@@ -48,7 +49,6 @@ const InternalMap = withScriptjs(withGoogleMap(({
     return new google.maps.LatLng(place.position.latitude, place.position.longitude);
   });
 
-  // TODO: Localize
   return (
     <Fragment>
       <GoogleMap
@@ -113,12 +113,21 @@ class Map extends Component {
 
   render() {
     const { places, t } = this.props;
+    const loader = <Container center>
+      <Overlay>
+        <Loader />
+      </Overlay>
+    </Container>;
+
+    if (places.isFetching) {
+      return loader;
+    }
 
     return (
       <InternalMap
         googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places,visualization&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`}
         containerElement={<Container />}
-        loadingElement={<div className="map-loading">Loading</div>}
+        loadingElement={loader}
         mapElement={<div className="map" />}
         placeholder={t('map.search.placeholder')}
         places={places.places}

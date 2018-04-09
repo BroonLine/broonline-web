@@ -20,25 +20,6 @@
  * SOFTWARE.
  */
 
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
-import './Overlay.css';
-
-class Overlay extends Component {
-
-  render() {
-    return <div className="container__overlay">{this.props.children}</div>;
-  }
-
+.loader {
+  text-align: center;
 }
-
-Overlay.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
-    PropTypes.element,
-    PropTypes.string
-  ])
-};
-
-export default Overlay;

@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-import Container from './Container';
-import Overlay from './Overlay';
+import Container from './Container.js';
+import Overlay from './Overlay.js';
 
 export default Container;
 

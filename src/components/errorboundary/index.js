@@ -20,6 +20,6 @@
  * SOFTWARE.
  */
 
-import ErrorBoundary from './ErrorBoundary';
+import ErrorBoundary from './ErrorBoundary.js';
 
 export default ErrorBoundary;

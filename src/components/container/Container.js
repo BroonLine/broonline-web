@@ -28,15 +28,23 @@ import './Container.css';
 class Container extends Component {
 
   render() {
-    return <div className="container">{this.props.children}</div>;
+    const { center, children } = this.props;
+
+    return (
+      <div className={`container ${center ? 'container--center' : ''}`}>
+        {children}
+      </div>
+    );
   }
 
 }
 
 Container.propTypes = {
+  center: PropTypes.bool,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.element),
-    PropTypes.element
+    PropTypes.element,
+    PropTypes.string
   ])
 };
 

@@ -5,6 +5,9 @@
     "header": "Oops!",
     "message": "Something went wrong."
   },
+  "loader": {
+    "text": "Loading"
+  },
   "map": {
     "search": {
       "placeholder": "Find a chippie"

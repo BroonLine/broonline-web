@@ -51,7 +51,7 @@ class ErrorBoundary extends Component {
     // TODO: Improve format and styling of error
     if (hasError) {
       return (
-        <Container>
+        <Container center>
           <Overlay>
             <h1>{t('error.header')}</h1>
             <p>{t('error.message')}</p>
@@ -68,7 +68,8 @@ class ErrorBoundary extends Component {
 ErrorBoundary.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.element),
-    PropTypes.element
+    PropTypes.element,
+    PropTypes.string
   ]),
   t: PropTypes.func.isRequired
 };

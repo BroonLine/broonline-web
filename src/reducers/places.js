@@ -30,7 +30,7 @@ import {
 function places(
   state = {
     errors: [],
-    fetching: false,
+    isFetching: false,
     places: [],
     query: {
       dominant: 'yes'
@@ -43,14 +43,14 @@ function places(
   case RECEIVE_PLACES:
     return Object.assign({}, state, {
       errors: action.errors,
-      fetching: false,
+      isFetching: false,
       places: action.places,
       query: action.query
     });
   case REQUEST_PLACES:
     return Object.assign({}, state, {
       errors: [],
-      fetching: true,
+      isFetching: true,
       query: action.query
     });
   default:
