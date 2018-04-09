@@ -23,8 +23,8 @@
 /* global google */
 
 import PropTypes from 'prop-types';
-import React, { Component, Fragment } from 'react';
-import { GoogleMap, Marker, withGoogleMap, withScriptjs } from 'react-google-maps';
+import React, { Component } from 'react';
+import { GoogleMap, withGoogleMap, withScriptjs } from 'react-google-maps';
 import HeatmapLayer from 'react-google-maps/lib/components/visualization/HeatmapLayer';
 import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
