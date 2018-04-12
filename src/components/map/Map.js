@@ -38,6 +38,7 @@ import Loader from '../loader';
 import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
+  defaultPosition,
   placeholder,
   places = [],
   position,
@@ -49,8 +50,8 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
   return (
     <GoogleMap
-      defaultCenter={position}
       defaultZoom={zoom}
+      center={position || defaultPosition}
     >
       <Autocomplete
         controlPosition={google.maps.ControlPosition.TOP_LEFT}
@@ -90,12 +91,16 @@ const InternalMap = withScriptjs(withGoogleMap(({
 }));
 
 InternalMap.propTypes = {
+  defaultPosition: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired
+  }),
   placeholder: PropTypes.string.isRequired,
   places: PropTypes.array,
   position: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
-  }).isRequired,
+  }),
   zoom: PropTypes.number
 };
 
@@ -117,7 +122,7 @@ class Map extends Component {
       </Overlay>
     </Container>;
 
-    if (places.isFetching || !places.position) {
+    if (places.isFetching) {
       return loader;
     }
 
@@ -127,6 +132,7 @@ class Map extends Component {
         containerElement={<Container />}
         loadingElement={loader}
         mapElement={<div className="map" />}
+        defaultPosition={places.defaultPosition}
         placeholder={t('map.search.placeholder')}
         places={places.places}
         position={places.position}

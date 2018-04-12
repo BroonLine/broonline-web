@@ -30,18 +30,10 @@ export const REQUEST_PLACES = 'REQUEST_PLACES';
 
 export function getPosition() {
   return (dispatch) => {
-    const defaultAction = receivePosition({
-      latitude: 56.074968,
-      longitude: -3.4633847
-    });
-
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => dispatch(receivePosition(position.coords)),
-        () => dispatch(defaultAction)
+        (position) => dispatch(receivePosition(position.coords))
       );
-    } else {
-      dispatch(defaultAction);
     }
   };
 }

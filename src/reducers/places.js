@@ -30,6 +30,10 @@ import {
 
 function places(
   state = {
+    defaultPosition: {
+      lat: 56.074968,
+      lng: -3.4633847
+    },
     errors: [],
     isFetching: false,
     places: [],
