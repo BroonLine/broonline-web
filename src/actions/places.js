@@ -24,9 +24,34 @@ import querystring from 'querystring';
 
 import fetch from '../fetch';
 
+export const ANSWER = 'ANSWER';
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
 export const RECEIVE_POSITION = 'RECEIVE_POSITION';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
+
+function answer(json) {
+  return {
+    type: ANSWER,
+    errors: json.errors || [],
+    place: json.data ? json.data.place : null
+  };
+}
+
+export function postAnswer(place, value) {
+  return (dispatch) => {
+    const { latitude, longitude } = place.position;
+    const params = querystring.stringify({
+      answer: value,
+      position: [ latitude, longitude ].join(',')
+    });
+    const qs = params ? `?${params}` : '';
+
+    return fetch(url(`/${place._id}/answer${qs}`), { method: 'POST' })
+      .then((res) => res.json())
+      .then((json) => dispatch(answer(json)))
+      .catch((error) => dispatch(answer({ errors: [ error ] })));
+  };
+}
 
 export function getPosition() {
   return (dispatch) => {
@@ -43,8 +68,9 @@ export function fetchPlaces(query) {
     dispatch(requestPlaces(query));
 
     const params = querystring.stringify(query);
+    const qs = params ? `?${params}` : '';
 
-    return fetch(url(params ? `?${params}` : ''))
+    return fetch(url(qs))
       .then((res) => res.json())
       .then((json) => dispatch(receivePlaces(query, json)))
       .catch((error) => dispatch(receivePlaces(query, { errors: [ error ] })));

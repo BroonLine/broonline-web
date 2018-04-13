@@ -20,13 +20,34 @@
  * SOFTWARE.
  */
 
-// TODO: Add answer action
-
 import {
+  ANSWER,
   RECEIVE_PLACES,
   RECEIVE_POSITION,
   REQUEST_PLACES
 } from '../actions/places';
+
+function withPlace(existingPlaces, place) {
+  // TODO: Optimize further
+  let replaced = false;
+  const newPlaces = [];
+
+  for (const existingPlace of existingPlaces) {
+    if (existingPlace._id === place._id) {
+      newPlaces.push(place);
+
+      replaced = true;
+    } else {
+      newPlaces.push(existingPlace);
+    }
+  }
+
+  if (!replaced) {
+    newPlaces.push(place);
+  }
+
+  return newPlaces;
+}
 
 function places(
   state = {
@@ -34,7 +55,7 @@ function places(
       lat: 56.074968,
       lng: -3.4633847
     },
-    errors: [],
+    hasErrors: false,
     isFetching: false,
     places: [],
     position: null,
@@ -46,9 +67,14 @@ function places(
 ) {
   // TODO: Test polyfill of Object.assign
   switch (action.type) {
+  case ANSWER:
+    return Object.assign({}, state, {
+      hasErrors: action.errors.length > 0,
+      places: action.place ? withPlace(state.places, action.place) : state.places
+    });
   case RECEIVE_PLACES:
     return Object.assign({}, state, {
-      errors: action.errors,
+      hasErrors: action.errors.length > 0,
       isFetching: false,
       places: action.places,
       query: action.query
@@ -59,7 +85,7 @@ function places(
     });
   case REQUEST_PLACES:
     return Object.assign({}, state, {
-      errors: [],
+      hasErrors: false,
       isFetching: true,
       query: action.query
     });

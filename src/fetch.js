@@ -21,7 +21,6 @@
  */
 
 import fetchPonyfill from 'fetch-ponyfill';
-// TODO: Test polyfill is needed
 import { Promise } from 'es6-promise';
 
 const ponyfill = typeof fetch === 'undefined' ? fetchPonyfill({ Promise }) : null;
