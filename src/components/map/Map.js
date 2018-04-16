@@ -24,25 +24,30 @@
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { GoogleMap, withGoogleMap, withScriptjs } from 'react-google-maps';
+import { GoogleMap, InfoWindow, Marker, withGoogleMap, withScriptjs } from 'react-google-maps';
 import HeatmapLayer from 'react-google-maps/lib/components/visualization/HeatmapLayer';
 import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as placesActionCreators from '../../actions/places';
-import Autocomplete from './Autocomplete';
+import Autocomplete from './autocomplete';
 import Container, { Overlay } from '../container';
 import Loader from '../loader';
+import PlaceInfo from './placeinfo';
 
 import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
   defaultPosition,
+  isOpen,
+  onAutocompleteMounted,
+  onSelect,
+  onToggleOpen,
   placeholder,
   places = [],
   position,
-  zoom = 8
+  select
 }) => {
   const data = places.map((place) => {
     return new google.maps.LatLng(place.position.latitude, place.position.longitude);
@@ -50,11 +55,14 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
   return (
     <GoogleMap
-      defaultZoom={zoom}
-      center={position || defaultPosition}
+      center={select ? select.geometry.location : position || defaultPosition}
+      zoom={select ? 17 : 8}
     >
       <Autocomplete
+        ref={onAutocompleteMounted}
         controlPosition={google.maps.ControlPosition.TOP_LEFT}
+        onPlaceChanged={onSelect}
+        types={[ 'establishment' ]}
       >
         <input
           className="map__search"
@@ -86,6 +94,18 @@ const InternalMap = withScriptjs(withGoogleMap(({
           radius: 25
         }}
       />
+      {select && (
+        <Marker
+          onClick={onToggleOpen}
+          position={select.geometry.location}
+        >
+          {isOpen && (
+            <InfoWindow onCloseClick={onToggleOpen}>
+              <PlaceInfo />
+            </InfoWindow>
+          )}
+        </Marker>
+      )}
     </GoogleMap>
   );
 }));
@@ -95,22 +115,66 @@ InternalMap.propTypes = {
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
   }),
+  isOpen: PropTypes.bool,
+  onAutocompleteMounted: PropTypes.func,
+  onToggleOpen: PropTypes.func,
+  onSelect: PropTypes.func,
   placeholder: PropTypes.string.isRequired,
   places: PropTypes.array,
   position: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
   }),
-  zoom: PropTypes.number
+  select: PropTypes.object
 };
 
 class Map extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      refs: {}
+    };
+
+    this.onAutocompleteMounted = this.onAutocompleteMounted.bind(this);
+    this.onSelect = this.onSelect.bind(this);
+    this.onToggleOpen = this.onToggleOpen.bind(this);
+  }
 
   componentDidMount() {
     const { fetchPlaces, getPosition } = this.props;
 
     fetchPlaces({ dominant: 'yes' });
     getPosition();
+  }
+
+  onAutocompleteMounted(ref) {
+    this.setState((prevState) => ({
+      refs: Object.assign({}, prevState.refs, {
+        autocomplete: ref
+      })
+    }));
+  }
+
+  onSelect() {
+    const { deselectPlace, selectPlace } = this.props;
+    const place = this.state.refs.autocomplete.getPlace();
+
+    // TODO: Remove debug
+    window.console.log(place);
+
+    deselectPlace();
+
+    if (place && place.id) {
+      selectPlace(place);
+    }
+  }
+
+  onToggleOpen() {
+    const { toggleSelectionOpen } = this.props;
+
+    toggleSelectionOpen();
   }
 
   render() {
@@ -133,9 +197,14 @@ class Map extends Component {
         loadingElement={loader}
         mapElement={<div className="map" />}
         defaultPosition={places.defaultPosition}
+        isOpen={places.openSelected}
+        onAutocompleteMounted={this.onAutocompleteMounted}
+        onSelect={this.onSelect}
+        onToggleOpen={this.onToggleOpen}
         placeholder={t('map.search.placeholder')}
         places={places.places}
         position={places.position}
+        select={places.selected}
       />
     );
   }
@@ -143,10 +212,14 @@ class Map extends Component {
 }
 
 Map.propTypes = {
+  deselectPlace: PropTypes.func.isRequired,
   fetchPlaces: PropTypes.func.isRequired,
   getPosition: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
-  t: PropTypes.func.isRequired
+  postAnswer: PropTypes.func.isRequired,
+  selectPlace: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired,
+  toggleSelectionOpen: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({

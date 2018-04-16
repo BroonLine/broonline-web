@@ -25,9 +25,14 @@ import querystring from 'querystring';
 import fetch from '../fetch';
 
 export const ANSWER = 'ANSWER';
+export const CLOSE_SELECTION = 'CLOSE_SELECTION';
+export const DESELECT_PLACE = 'DESELECT_PLACE';
+export const OPEN_SELECTION = 'OPEN_SELECTION';
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
 export const RECEIVE_POSITION = 'RECEIVE_POSITION';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
+export const SELECT_PLACE = 'SELECT_PLACE';
+export const TOGGLE_SELECTION_OPEN = 'TOGGLE_SELECTION_OPEN';
 
 function answer(json) {
   return {
@@ -37,19 +42,15 @@ function answer(json) {
   };
 }
 
-export function postAnswer(place, value) {
-  return (dispatch) => {
-    const { latitude, longitude } = place.position;
-    const params = querystring.stringify({
-      answer: value,
-      position: [ latitude, longitude ].join(',')
-    });
-    const qs = params ? `?${params}` : '';
+export function closeSelection() {
+  return {
+    type: CLOSE_SELECTION
+  };
+}
 
-    return fetch(url(`/${place._id}/answer${qs}`), { method: 'POST' })
-      .then((res) => res.json())
-      .then((json) => dispatch(answer(json)))
-      .catch((error) => dispatch(answer({ errors: [ error ] })));
+export function deselectPlace() {
+  return {
+    type: DESELECT_PLACE
   };
 }
 
@@ -77,6 +78,28 @@ export function fetchPlaces(query) {
   };
 }
 
+export function openSelection() {
+  return {
+    type: OPEN_SELECTION
+  };
+}
+
+export function postAnswer(place, value) {
+  return (dispatch) => {
+    const { latitude, longitude } = place.position;
+    const params = querystring.stringify({
+      answer: value,
+      position: [ latitude, longitude ].join(',')
+    });
+    const qs = params ? `?${params}` : '';
+
+    return fetch(url(`/${place._id}/answer${qs}`), { method: 'POST' })
+      .then((res) => res.json())
+      .then((json) => dispatch(answer(json)))
+      .catch((error) => dispatch(answer({ errors: [ error ] })));
+  };
+}
+
 function receivePlaces(query, json) {
   return {
     type: RECEIVE_PLACES,
@@ -100,6 +123,19 @@ function requestPlaces(query) {
   return {
     type: REQUEST_PLACES,
     query
+  };
+}
+
+export function selectPlace(place) {
+  return {
+    type: SELECT_PLACE,
+    place
+  };
+}
+
+export function toggleSelectionOpen() {
+  return {
+    type: TOGGLE_SELECTION_OPEN
   };
 }
 

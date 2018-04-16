@@ -44,5 +44,12 @@
         "title": "Share on $t(navbar.link.twitter.text)"
       }
     }
+  },
+  "placeInfo": {
+    "question": "Is asking for broon sauce acceptable at this place?",
+    "answer": {
+      "no": "No",
+      "yes": "Yes"
+    }
   }
 }

@@ -22,32 +22,83 @@
 
 import {
   ANSWER,
+  CLOSE_SELECTION,
+  DESELECT_PLACE,
+  OPEN_SELECTION,
   RECEIVE_PLACES,
   RECEIVE_POSITION,
-  REQUEST_PLACES
+  REQUEST_PLACES,
+  SELECT_PLACE,
+  TOGGLE_SELECTION_OPEN
 } from '../actions/places';
 
-function withPlace(existingPlaces, place) {
-  // TODO: Optimize further
-  let replaced = false;
-  const newPlaces = [];
+const actionHandlers = {
+  [ANSWER]: (action, state) => {
+    const { errors, place } = action;
+    let mapping = state.mapping;
+    let placesArray = state.places;
 
-  for (const existingPlace of existingPlaces) {
-    if (existingPlace._id === place._id) {
-      newPlaces.push(place);
+    if (place) {
+      const entry = mapping[place._id] || { index: placesArray.length };
+      entry.place = place;
 
-      replaced = true;
-    } else {
-      newPlaces.push(existingPlace);
+      mapping = Object.assign({}, mapping, {
+        [place._id]: entry
+      });
+      placesArray = placesArray.slice();
+      placesArray.splice(entry.index, 1, place);
     }
-  }
 
-  if (!replaced) {
-    newPlaces.push(place);
-  }
+    return {
+      hasErrors: errors.length > 0,
+      mapping,
+      places: placesArray
+    };
+  },
+  [CLOSE_SELECTION]: () => ({
+    openSelected: false
+  }),
+  [DESELECT_PLACE]: () => ({
+    openSelected: false,
+    selected: null
+  }),
+  [OPEN_SELECTION]: () => ({
+    openSelected: true
+  }),
+  [RECEIVE_PLACES]: (action) => ({
+    hasErrors: action.errors.length > 0,
+    isFetching: false,
+    mapping: action.places.reduce((mapping, place, index) => {
+      mapping[place._id] = {
+        index,
+        place
+      };
 
-  return newPlaces;
-}
+      return mapping;
+    }, {}),
+    places: action.places,
+    query: action.query
+  }),
+  [RECEIVE_POSITION]: (action) => ({
+    position: action.position
+  }),
+  [REQUEST_PLACES]: (action) => ({
+    hasErrors: false,
+    isFetching: true,
+    query: action.query
+  }),
+  [SELECT_PLACE]: (action, state) => ({
+    openSelected: false,
+    position: action.place ? {
+      lat: action.place.geometry.location.lat(),
+      lng: action.place.geometry.location.lng()
+    } : state.position,
+    selected: action.place
+  }),
+  [TOGGLE_SELECTION_OPEN]: (action, state) => ({
+    openSelected: !state.openSelected
+  })
+};
 
 function places(
   state = {
@@ -57,41 +108,24 @@ function places(
     },
     hasErrors: false,
     isFetching: false,
+    mapping: {},
+    openSelected: false,
     places: [],
     position: null,
     query: {
       dominant: 'yes'
-    }
+    },
+    selected: null
   },
-  action
+  action = {}
 ) {
-  // TODO: Test polyfill of Object.assign
-  switch (action.type) {
-  case ANSWER:
-    return Object.assign({}, state, {
-      hasErrors: action.errors.length > 0,
-      places: action.place ? withPlace(state.places, action.place) : state.places
-    });
-  case RECEIVE_PLACES:
-    return Object.assign({}, state, {
-      hasErrors: action.errors.length > 0,
-      isFetching: false,
-      places: action.places,
-      query: action.query
-    });
-  case RECEIVE_POSITION:
-    return Object.assign({}, state, {
-      position: action.position
-    });
-  case REQUEST_PLACES:
-    return Object.assign({}, state, {
-      hasErrors: false,
-      isFetching: true,
-      query: action.query
-    });
-  default:
-    return state;
+  const handler = actionHandlers[action.type];
+  if (handler) {
+    // TODO: Test polyfill of Object.assign
+    return Object.assign({}, state, handler(action, state));
   }
+
+  return state;
 }
 
 export default places;

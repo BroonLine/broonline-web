@@ -214,12 +214,12 @@ export class Autocomplete extends PureComponent {
   }
 
   /**
-   * Returns the query selected by the user, or `null` if no places have been found yet, to be used with `places_changed` event.
-   * @type Array<PlaceResult>nullplaces_changed
+   * Returns the query selected by the user, or `null` if no place has been found yet, to be used with `place_changed` event.
+   * @type PlaceResultnullplaces_changed
    * @public
    */
-  getPlaces() {
-    return this.state[AUTO_COMPLETE].getPlaces();
+  getPlace() {
+    return this.state[AUTO_COMPLETE].getPlace();
   }
 }
 
@@ -228,7 +228,7 @@ export default Autocomplete;
 const isValidControlPosition = _.isNumber;
 
 const eventMap = {
-  onPlacesChanged: 'places_changed'
+  onPlaceChanged: 'place_changed'
 };
 
 const updaterMap = {
