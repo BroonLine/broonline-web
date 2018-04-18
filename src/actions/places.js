@@ -28,9 +28,9 @@ export const DESELECT_PLACE = 'DESELECT_PLACE';
 export const OPEN_SELECTION = 'OPEN_SELECTION';
 export const OPENED_SELECTION = 'OPENED_SELECTION';
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
-export const RECEIVE_POSITION = 'RECEIVE_POSITION';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
 export const SELECT_PLACE = 'SELECT_PLACE';
+export const SET_POSITION = 'SET_POSITION';
 
 // TODO: Split selection stuff into separate actions
 
@@ -76,7 +76,7 @@ export function getPosition() {
   return (dispatch) => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => dispatch(receivePosition(position.coords))
+        (position) => dispatch(setPositionInternal(position.coords))
       );
     }
   };
@@ -123,16 +123,6 @@ function receivePlaces(query, result) {
   };
 }
 
-function receivePosition(coords) {
-  return {
-    type: RECEIVE_POSITION,
-    position: {
-      lat: coords.latitude,
-      lng: coords.longitude
-    }
-  };
-}
-
 function requestPlaces(query) {
   return {
     type: REQUEST_PLACES,
@@ -145,6 +135,20 @@ export function selectPlace(id, location) {
     type: SELECT_PLACE,
     id,
     location
+  };
+}
+
+export function setPosition(position) {
+  return (dispatch) => dispatch(setPositionInternal(position));
+}
+
+function setPositionInternal(position) {
+  return {
+    type: SET_POSITION,
+    position: {
+      lat: position.lat != null ? position.lat : position.latitude,
+      lng: position.lng != null ? position.lng : position.longitude
+    }
   };
 }
 

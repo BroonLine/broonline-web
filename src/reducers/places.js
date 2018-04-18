@@ -27,9 +27,9 @@ import {
   OPEN_SELECTION,
   OPENED_SELECTION,
   RECEIVE_PLACES,
-  RECEIVE_POSITION,
   REQUEST_PLACES,
-  SELECT_PLACE
+  SELECT_PLACE,
+  SET_POSITION
 } from '../actions/places';
 
 // TODO: Split selection stuff into separate reducers
@@ -92,9 +92,6 @@ const actionHandlers = {
     places: action.places,
     query: action.query
   }),
-  [RECEIVE_POSITION]: (action) => ({
-    position: action.position
-  }),
   [REQUEST_PLACES]: (action) => ({
     hasErrors: false,
     isFetching: true,
@@ -107,21 +104,23 @@ const actionHandlers = {
       id: action.id,
       location: action.location
     } : null
+  }),
+  [SET_POSITION]: (action) => ({
+    position: action.position
   })
 };
 
 function places(
   state = {
-    defaultPosition: {
-      lat: 56.074968,
-      lng: -3.4633847
-    },
     hasErrors: false,
     isFetching: false,
     mapping: {},
     openSelected: false,
     places: [],
-    position: null,
+    position: {
+      lat: 56.074968,
+      lng: -3.4633847
+    },
     query: {
       dominant: 'yes'
     },

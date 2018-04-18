@@ -39,7 +39,6 @@ import PlaceInfo from './placeinfo';
 import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
-  defaultPosition,
   isOpen,
   onAutocompleteMounted,
   onClick,
@@ -56,7 +55,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
   return (
     <GoogleMap
-      center={select ? select.location : position || defaultPosition}
+      center={select ? select.location : position}
       defaultOptions={{
         fullscreenControl: false,
         mapTypeControl: false
@@ -115,10 +114,6 @@ const InternalMap = withScriptjs(withGoogleMap(({
 }));
 
 InternalMap.propTypes = {
-  defaultPosition: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired
-  }),
   isOpen: PropTypes.bool,
   onAutocompleteMounted: PropTypes.func,
   onClick: PropTypes.func,
@@ -219,7 +214,6 @@ class Map extends Component {
         containerElement={<Container />}
         loadingElement={loader}
         mapElement={<div className="map" />}
-        defaultPosition={places.defaultPosition}
         isOpen={places.openSelected}
         onAutocompleteMounted={this.onAutocompleteMounted}
         onClick={this.onClick}
