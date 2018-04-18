@@ -68,7 +68,9 @@ const InternalMap = withScriptjs(withGoogleMap(({
         ref={onAutocompleteMounted}
         controlPosition={google.maps.ControlPosition.TOP_LEFT}
         onPlaceChanged={onSelect}
-        types={[ 'establishment' ]}
+        options={{
+          types: [ 'establishment' ]
+        }}
       >
         <input
           className="map__search"
