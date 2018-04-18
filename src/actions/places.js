@@ -34,6 +34,9 @@ export const REQUEST_PLACES = 'REQUEST_PLACES';
 export const SELECT_PLACE = 'SELECT_PLACE';
 export const TOGGLE_SELECTION_OPEN = 'TOGGLE_SELECTION_OPEN';
 
+// TODO: Move fetches to internal API for reusability
+// TODO: Split selection stuff into separate actions
+
 function answer(json) {
   return {
     type: ANSWER,
@@ -93,7 +96,7 @@ export function postAnswer(place, value) {
     });
     const qs = params ? `?${params}` : '';
 
-    return fetch(url(`/${place._id}/answer${qs}`), { method: 'POST' })
+    return fetch(url(`/${place.id}/answer${qs}`), { method: 'POST' })
       .then((res) => res.json())
       .then((json) => dispatch(answer(json)))
       .catch((error) => dispatch(answer({ errors: [ error ] })));

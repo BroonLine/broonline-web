@@ -56,6 +56,10 @@ const InternalMap = withScriptjs(withGoogleMap(({
   return (
     <GoogleMap
       center={select ? select.geometry.location : position || defaultPosition}
+      defaultOptions={{
+        fullscreenControl: false,
+        mapTypeControl: false
+      }}
       zoom={select ? 17 : 8}
     >
       <Autocomplete
@@ -160,9 +164,6 @@ class Map extends Component {
   onSelect() {
     const { deselectPlace, selectPlace } = this.props;
     const place = this.state.refs.autocomplete.getPlace();
-
-    // TODO: Remove debug
-    window.console.log(place);
 
     deselectPlace();
 

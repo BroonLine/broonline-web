@@ -43,8 +43,6 @@ class PlaceInfo extends Component {
     const { selected } = places;
     const entry = places.mapping[selected.place_id];
     const place = entry ? entry.place : null;
-    // TODO: Remove debug
-    window.console.log(place);
     const answers = {
       no: place ? place.answers.no : 0,
       yes: place ? place.answers.yes : 0
@@ -54,6 +52,17 @@ class PlaceInfo extends Component {
       no: Math.round((answers.no / total) * 100),
       yes: Math.round((answers.yes / total) * 100)
     };
+    const progressBars = [];
+    if (percentages.yes > 0) {
+      progressBars.push(<ProgressBar key="yes" status="positive" value={percentages.yes}>
+        {t('placeInfo.answer.yes')}
+      </ProgressBar>);
+    }
+    if (percentages.no > 0) {
+      progressBars.push(<ProgressBar key="no" status="negative" value={percentages.no}>
+        {t('placeInfo.answer.no')}
+      </ProgressBar>);
+    }
 
     return (
       <div className="place-info">
@@ -64,22 +73,17 @@ class PlaceInfo extends Component {
         <div className="place-info__answer" role="group">
           <button type="button">
             <FontAwesomeIcon icon="check" />
+            &nbsp;
             {t('placeInfo.answer.yes')}
           </button>
           <button type="button">
             <FontAwesomeIcon icon="times" />
+            &nbsp;
             {t('placeInfo.answer.no')}
           </button>
         </div>
 
-        <Progress>
-          <ProgressBar status="success" value={percentages.yes}>
-            {t('placeInfo.answer.yes')}
-          </ProgressBar>
-          <ProgressBar status="danger" value={percentages.no}>
-            {t('placeInfo.answer.no')}
-          </ProgressBar>
-        </Progress>
+        <Progress>{progressBars}</Progress>
       </div>
     );
   }

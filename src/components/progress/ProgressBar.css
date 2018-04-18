@@ -20,4 +20,24 @@
  * SOFTWARE.
  */
 
-/* TODO: Complete */
+.progress__bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  transition: width .6s ease;
+}
+
+.progress__bar--default {
+  background-color: #007bff;
+}
+
+.progress__bar--negative {
+  background-color: #dc3545;
+}
+
+.progress__bar--positive {
+  background-color: #28a745;
+}

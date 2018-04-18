@@ -38,6 +38,7 @@ class ProgressBar extends Component {
     return (
       <div
         className={`progress__bar progress__bar--${status || 'default'}`}
+        style={{ width: formattedValue }}
         title={formattedValue}
         role="progressbar"
         aria-valuemax={maxValue}
@@ -61,7 +62,7 @@ ProgressBar.propTypes = {
   max: PropTypes.number,
   min: PropTypes.number,
   value: PropTypes.number.isRequired,
-  status: PropTypes.oneOf([ 'danger', 'default', 'success' ])
+  status: PropTypes.oneOf([ 'default', 'negative', 'positive' ])
 };
 
 export default ProgressBar;

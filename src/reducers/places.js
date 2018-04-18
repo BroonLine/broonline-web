@@ -32,6 +32,8 @@ import {
   TOGGLE_SELECTION_OPEN
 } from '../actions/places';
 
+// TODO: Split selection stuff into separate reducers
+
 const actionHandlers = {
   [ANSWER]: (action, state) => {
     const { errors, place } = action;
@@ -39,11 +41,11 @@ const actionHandlers = {
     let placesArray = state.places;
 
     if (place) {
-      const entry = mapping[place._id] || { index: placesArray.length };
+      const entry = mapping[place.id] || { index: placesArray.length };
       entry.place = place;
 
       mapping = Object.assign({}, mapping, {
-        [place._id]: entry
+        [place.id]: entry
       });
       placesArray = placesArray.slice();
       placesArray.splice(entry.index, 1, place);
@@ -69,7 +71,7 @@ const actionHandlers = {
     hasErrors: action.errors.length > 0,
     isFetching: false,
     mapping: action.places.reduce((mapping, place, index) => {
-      mapping[place._id] = {
+      mapping[place.id] = {
         index,
         place
       };
