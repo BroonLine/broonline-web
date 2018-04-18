@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import places from './places';
+import * as places from './places';
 
 export {
   places
