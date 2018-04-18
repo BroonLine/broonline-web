@@ -20,24 +20,6 @@
  * SOFTWARE.
  */
 
-.progress__bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  transition: width .6s ease;
-}
+import Button from './Button.js';
 
-.progress__bar--default {
-  background-color: #a0522d;
-}
-
-.progress__bar--negative {
-  background-color: #dc3545;
-}
-
-.progress__bar--positive {
-  background-color: #28a745;
-}
+export default Button;

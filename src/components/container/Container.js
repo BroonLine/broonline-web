@@ -42,7 +42,10 @@ class Container extends Component {
 Container.propTypes = {
   center: PropTypes.bool,
   children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
+    PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.element,
+      PropTypes.string
+    ])),
     PropTypes.element,
     PropTypes.string
   ])

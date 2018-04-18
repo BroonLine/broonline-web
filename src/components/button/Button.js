@@ -20,52 +20,35 @@
  * SOFTWARE.
  */
 
+// TODO: Complete
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactGA from 'react-ga';
-import { translate } from 'react-i18next';
 
-import Container, { Overlay } from '../container';
+import './Button.css';
 
-class ErrorBoundary extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = { hasError: false };
-  }
-
-  componentDidCatch(error) {
-    this.setState({ hasError: true });
-
-    ReactGA.exception({
-      description: error.message,
-      fatal: true
-    });
-  }
+class Button extends Component {
 
   render() {
-    const { hasError } = this.state;
-    const { t } = this.props;
+    const { children, disabled, onClick, status, type } = this.props;
 
-    // TODO: Improve format and styling of error
-    if (hasError) {
-      return (
-        <Container center>
-          <Overlay>
-            <h1>{t('error.header')}</h1>
-            <p>{t('error.message')}</p>
-          </Overlay>
-        </Container>
-      );
-    }
-
-    return this.props.children;
+    return (
+      <button
+        className={`button button--${status || 'default'}`}
+        disabled={disabled}
+        onClick={onClick}
+        tabIndex={disabled ? -1 : null}
+        type={type || 'button'}
+        aria-disabled={disabled}
+      >
+        {children}
+      </button>
+    );
   }
 
 }
 
-ErrorBoundary.propTypes = {
+Button.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.oneOfType([
       PropTypes.element,
@@ -74,7 +57,10 @@ ErrorBoundary.propTypes = {
     PropTypes.element,
     PropTypes.string
   ]),
-  t: PropTypes.func.isRequired
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func,
+  status: PropTypes.oneOf([ 'default', 'negative', 'positive' ]),
+  type: PropTypes.oneOf([ 'button', 'reset', 'submit' ])
 };
 
-export default translate()(ErrorBoundary);
+export default Button;

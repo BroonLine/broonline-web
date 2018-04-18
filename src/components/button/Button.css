@@ -20,24 +20,51 @@
  * SOFTWARE.
  */
 
-.progress__bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #fff;
+/* TODO: Complete */
+
+.button {
+  display: inline-block;
+  font-weight: normal;
   text-align: center;
   white-space: nowrap;
-  transition: width .6s ease;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1;
+  border-radius: 2px;
+}
+.button:not(:disabled) {
+  cursor: pointer;
 }
 
-.progress__bar--default {
+.button--default {
+  color: #fff;
   background-color: #a0522d;
+  border-color: #a0522d;
+}
+.button--default:hover {
+  background-color: #824325;
+  border-color: #783e22;
 }
 
-.progress__bar--negative {
+.button--negative {
+  color: #fff;
   background-color: #dc3545;
+  border-color: #dc3545;
+}
+.button--negative:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
 }
 
-.progress__bar--positive {
+.button--positive {
+  color: #fff;
   background-color: #28a745;
+  border-color: #28a745;
+}
+.button--positive:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
 }

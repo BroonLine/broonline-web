@@ -35,7 +35,10 @@ class ScreenReaderOnly extends Component {
 
 ScreenReaderOnly.propTypes = {
   children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
+    PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.element,
+      PropTypes.string
+    ])),
     PropTypes.element,
     PropTypes.string
   ])

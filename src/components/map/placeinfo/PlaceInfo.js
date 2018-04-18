@@ -28,6 +28,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as placesActionCreators from '../../../actions/places';
+import Button from '../../button';
 import Loader from '../../loader';
 import Progress, { ProgressBar } from '../../progress';
 
@@ -69,20 +70,22 @@ class PlaceInfo extends Component {
         <p className="place-info__address">{place.address}</p>
 
         <p className="place-info__question">{t('placeInfo.question')}</p>
-        <div className="place-info__answer" role="group">
-          <button type="button">
+
+        <Progress>{progressBars}</Progress>
+
+        <div className="place-info__actions">
+          <Button status="positive">
             <FontAwesomeIcon icon="check" />
             &nbsp;
             {t('placeInfo.answer.yes')}
-          </button>
-          <button type="button">
+          </Button>
+          &nbsp;
+          <Button status="negative">
             <FontAwesomeIcon icon="times" />
             &nbsp;
             {t('placeInfo.answer.no')}
-          </button>
+          </Button>
         </div>
-
-        <Progress>{progressBars}</Progress>
       </div>
     );
   }

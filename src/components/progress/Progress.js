@@ -35,8 +35,12 @@ class Progress extends Component {
 
 Progress.propTypes = {
   children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.element),
-    PropTypes.element
+    PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.element,
+      PropTypes.string
+    ])),
+    PropTypes.element,
+    PropTypes.string
   ])
 };
 
