@@ -28,6 +28,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import * as placesActionCreators from '../../../actions/places';
+import Loader from '../../loader';
 import Progress, { ProgressBar } from '../../progress';
 
 import './PlaceInfo.css';
@@ -40,17 +41,15 @@ class PlaceInfo extends Component {
 
   render() {
     const { places, t } = this.props;
-    const { selected } = places;
-    const entry = places.mapping[selected.place_id];
-    const place = entry ? entry.place : null;
-    const answers = {
-      no: place ? place.answers.no : 0,
-      yes: place ? place.answers.yes : 0
-    };
-    const total = answers.no + answers.yes;
+    const { place } = places.selected;
+    if (!place) {
+      return <Loader />;
+    }
+
+    const total = place.answers.no + place.answers.yes;
     const percentages = {
-      no: Math.round((answers.no / total) * 100),
-      yes: Math.round((answers.yes / total) * 100)
+      no: Math.round((place.answers.no / total) * 100),
+      yes: Math.round((place.answers.yes / total) * 100)
     };
     const progressBars = [];
     if (percentages.yes > 0) {
@@ -66,8 +65,8 @@ class PlaceInfo extends Component {
 
     return (
       <div className="place-info">
-        <h2 className="place-info__name">{selected.name}</h2>
-        <p className="place-info__address">{selected.formatted_address}</p>
+        <h2 className="place-info__name">{place.name}</h2>
+        <p className="place-info__address">{place.address}</p>
 
         <p className="place-info__question">{t('placeInfo.question')}</p>
         <div className="place-info__answer" role="group">

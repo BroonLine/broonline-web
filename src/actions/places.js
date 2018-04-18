@@ -26,17 +26,17 @@ export const ANSWER = 'ANSWER';
 export const CLOSE_SELECTION = 'CLOSE_SELECTION';
 export const DESELECT_PLACE = 'DESELECT_PLACE';
 export const OPEN_SELECTION = 'OPEN_SELECTION';
+export const OPENED_SELECTION = 'OPENED_SELECTION';
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
 export const RECEIVE_POSITION = 'RECEIVE_POSITION';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
 export const SELECT_PLACE = 'SELECT_PLACE';
-export const TOGGLE_SELECTION_OPEN = 'TOGGLE_SELECTION_OPEN';
 
 // TODO: Split selection stuff into separate actions
 
-export function addAnswer(placeId, value) {
+export function addAnswer(id, value) {
   return async(dispatch) => {
-    const result = await places.addAnswer(placeId, { value });
+    const result = await places.addAnswer(id, { value });
 
     dispatch(answer(result));
   };
@@ -83,6 +83,32 @@ export function getPosition() {
 }
 
 export function openSelection() {
+  return openSelectionInternal;
+}
+
+async function openSelectionInternal(dispatch, getState) {
+  dispatch(openingSelection());
+
+  const state = getState();
+  const { selected } = state.places;
+  const result = selected.place ? {
+    data: {
+      place: selected.place
+    }
+  } : await places.findById(selected.id, { expand: true });
+
+  dispatch(openedSelection(result));
+}
+
+function openedSelection(result) {
+  return {
+    type: OPENED_SELECTION,
+    errors: result.errors || [],
+    place: result.data ? result.data.place : null
+  };
+}
+
+function openingSelection() {
   return {
     type: OPEN_SELECTION
   };
@@ -114,15 +140,22 @@ function requestPlaces(query) {
   };
 }
 
-export function selectPlace(place) {
+export function selectPlace(id, location) {
   return {
     type: SELECT_PLACE,
-    place
+    id,
+    location
   };
 }
 
 export function toggleSelectionOpen() {
-  return {
-    type: TOGGLE_SELECTION_OPEN
+  return async(dispatch, getState) => {
+    const state = getState();
+
+    if (state.places.openSelected) {
+      dispatch(closeSelection());
+    } else {
+      await openSelectionInternal(dispatch, getState);
+    }
   };
 }

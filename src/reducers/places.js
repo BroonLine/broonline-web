@@ -25,11 +25,11 @@ import {
   CLOSE_SELECTION,
   DESELECT_PLACE,
   OPEN_SELECTION,
+  OPENED_SELECTION,
   RECEIVE_PLACES,
   RECEIVE_POSITION,
   REQUEST_PLACES,
-  SELECT_PLACE,
-  TOGGLE_SELECTION_OPEN
+  SELECT_PLACE
 } from '../actions/places';
 
 // TODO: Split selection stuff into separate reducers
@@ -67,6 +67,17 @@ const actionHandlers = {
   [OPEN_SELECTION]: () => ({
     openSelected: true
   }),
+  [OPENED_SELECTION]: (action) => ({
+    hasErrors: action.errors.length > 0,
+    selected: action.place ? {
+      id: action.place.id,
+      location: {
+        lat: action.place.position.latitude,
+        lng: action.place.position.longitude
+      },
+      place: action.place
+    } : null
+  }),
   [RECEIVE_PLACES]: (action) => ({
     hasErrors: action.errors.length > 0,
     isFetching: false,
@@ -91,14 +102,11 @@ const actionHandlers = {
   }),
   [SELECT_PLACE]: (action, state) => ({
     openSelected: false,
-    position: action.place ? {
-      lat: action.place.geometry.location.lat(),
-      lng: action.place.geometry.location.lng()
-    } : state.position,
-    selected: action.place
-  }),
-  [TOGGLE_SELECTION_OPEN]: (action, state) => ({
-    openSelected: !state.openSelected
+    position: action.location || state.position,
+    selected: action.id && action.location ? {
+      id: action.id,
+      location: action.location
+    } : null
   })
 };
 

@@ -42,6 +42,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
   defaultPosition,
   isOpen,
   onAutocompleteMounted,
+  onClick,
   onSelect,
   onToggleOpen,
   placeholder,
@@ -55,11 +56,12 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
   return (
     <GoogleMap
-      center={select ? select.geometry.location : position || defaultPosition}
+      center={select ? select.location : position || defaultPosition}
       defaultOptions={{
         fullscreenControl: false,
         mapTypeControl: false
       }}
+      onClick={onClick}
       zoom={select ? 17 : 8}
     >
       <Autocomplete
@@ -98,18 +100,14 @@ const InternalMap = withScriptjs(withGoogleMap(({
           radius: 25
         }}
       />
-      {select && (
-        <Marker
-          onClick={onToggleOpen}
-          position={select.geometry.location}
-        >
-          {isOpen && (
-            <InfoWindow onCloseClick={onToggleOpen}>
-              <PlaceInfo />
-            </InfoWindow>
-          )}
-        </Marker>
-      )}
+      {select && <Marker
+        onClick={onToggleOpen}
+        position={select.location}
+      >
+        {isOpen && <InfoWindow onCloseClick={onToggleOpen}>
+          <PlaceInfo />
+        </InfoWindow>}
+      </Marker>}
     </GoogleMap>
   );
 }));
@@ -121,6 +119,7 @@ InternalMap.propTypes = {
   }),
   isOpen: PropTypes.bool,
   onAutocompleteMounted: PropTypes.func,
+  onClick: PropTypes.func,
   onToggleOpen: PropTypes.func,
   onSelect: PropTypes.func,
   placeholder: PropTypes.string.isRequired,
@@ -142,6 +141,7 @@ class Map extends Component {
     };
 
     this.onAutocompleteMounted = this.onAutocompleteMounted.bind(this);
+    this.onClick = this.onClick.bind(this);
     this.onSelect = this.onSelect.bind(this);
     this.onToggleOpen = this.onToggleOpen.bind(this);
   }
@@ -161,14 +161,34 @@ class Map extends Component {
     }));
   }
 
+  onClick(event) {
+    if (event.placeId) {
+      const { deselectPlace, selectPlace } = this.props;
+      const { latLng: location } = event;
+
+      deselectPlace();
+      selectPlace(event.placeId, {
+        lat: location.lat(),
+        lng: location.lng()
+      });
+
+      event.stop();
+    }
+  }
+
   onSelect() {
     const { deselectPlace, selectPlace } = this.props;
     const place = this.state.refs.autocomplete.getPlace();
 
     deselectPlace();
 
-    if (place && place.id) {
-      selectPlace(place);
+    if (place && place.place_id) {
+      const { location } = place.geometry;
+
+      selectPlace(place.place_id, {
+        lat: location.lat(),
+        lng: location.lng()
+      });
     }
   }
 
@@ -200,6 +220,7 @@ class Map extends Component {
         defaultPosition={places.defaultPosition}
         isOpen={places.openSelected}
         onAutocompleteMounted={this.onAutocompleteMounted}
+        onClick={this.onClick}
         onSelect={this.onSelect}
         onToggleOpen={this.onToggleOpen}
         placeholder={t('map.search.placeholder')}
