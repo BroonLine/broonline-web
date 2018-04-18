@@ -38,8 +38,8 @@ export function addAnswer(place, value) {
   return async(dispatch) => {
     const { latitude, longitude } = place.position;
     const query = {
-      answer: value,
-      position: [ latitude, longitude ].join(',')
+      position: [ latitude, longitude ].join(','),
+      value
     };
 
     const result = await places.addAnswer(place.id, query);
