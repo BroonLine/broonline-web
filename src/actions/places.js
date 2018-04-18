@@ -34,15 +34,9 @@ export const TOGGLE_SELECTION_OPEN = 'TOGGLE_SELECTION_OPEN';
 
 // TODO: Split selection stuff into separate actions
 
-export function addAnswer(place, value) {
+export function addAnswer(placeId, value) {
   return async(dispatch) => {
-    const { latitude, longitude } = place.position;
-    const query = {
-      position: [ latitude, longitude ].join(','),
-      value
-    };
-
-    const result = await places.addAnswer(place.id, query);
+    const result = await places.addAnswer(placeId, { value });
 
     dispatch(answer(result));
   };
