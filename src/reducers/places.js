@@ -97,9 +97,8 @@ const actionHandlers = {
     isFetching: true,
     query: action.query
   }),
-  [SELECT_PLACE]: (action, state) => ({
+  [SELECT_PLACE]: (action) => ({
     openSelected: false,
-    position: action.location || state.position,
     selected: action.id && action.location ? {
       id: action.id,
       location: action.location

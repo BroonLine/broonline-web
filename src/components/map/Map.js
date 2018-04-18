@@ -55,7 +55,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
   return (
     <GoogleMap
-      center={select ? select.location : position}
+      center={position}
       defaultOptions={{
         fullscreenControl: false,
         mapTypeControl: false
@@ -174,18 +174,20 @@ class Map extends Component {
   }
 
   onSelect() {
-    const { deselectPlace, selectPlace } = this.props;
+    const { deselectPlace, selectPlace, setPosition } = this.props;
     const place = this.state.refs.autocomplete.getPlace();
 
     deselectPlace();
 
     if (place && place.place_id) {
       const { location } = place.geometry;
-
-      selectPlace(place.place_id, {
+      const position = {
         lat: location.lat(),
         lng: location.lng()
-      });
+      };
+
+      selectPlace(place.place_id, position);
+      setPosition(position);
     }
   }
 
@@ -236,6 +238,7 @@ Map.propTypes = {
   getPosition: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
   selectPlace: PropTypes.func.isRequired,
+  setPosition: PropTypes.func.isRequired,
   t: PropTypes.func.isRequired,
   toggleSelectionOpen: PropTypes.func.isRequired
 };
