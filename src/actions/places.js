@@ -20,9 +20,7 @@
  * SOFTWARE.
  */
 
-import querystring from 'querystring';
-
-import fetch from '../fetch';
+import * as places from '../api/places';
 
 export const ANSWER = 'ANSWER';
 export const CLOSE_SELECTION = 'CLOSE_SELECTION';
@@ -34,14 +32,27 @@ export const REQUEST_PLACES = 'REQUEST_PLACES';
 export const SELECT_PLACE = 'SELECT_PLACE';
 export const TOGGLE_SELECTION_OPEN = 'TOGGLE_SELECTION_OPEN';
 
-// TODO: Move fetches to internal API for reusability
 // TODO: Split selection stuff into separate actions
 
-function answer(json) {
+export function addAnswer(place, value) {
+  return async(dispatch) => {
+    const { latitude, longitude } = place.position;
+    const query = {
+      answer: value,
+      position: [ latitude, longitude ].join(',')
+    };
+
+    const result = await places.addAnswer(place.id, query);
+
+    dispatch(answer(result));
+  };
+}
+
+function answer(result) {
   return {
     type: ANSWER,
-    errors: json.errors || [],
-    place: json.data ? json.data.place : null
+    errors: result.errors || [],
+    place: result.data ? result.data.place : null
   };
 }
 
@@ -57,6 +68,16 @@ export function deselectPlace() {
   };
 }
 
+export function findPlaces(query) {
+  return async(dispatch) => {
+    dispatch(requestPlaces(query));
+
+    const result = await places.find(query);
+
+    dispatch(receivePlaces(query, result));
+  };
+}
+
 export function getPosition() {
   return (dispatch) => {
     if ('geolocation' in navigator) {
@@ -67,47 +88,17 @@ export function getPosition() {
   };
 }
 
-export function fetchPlaces(query) {
-  return (dispatch) => {
-    dispatch(requestPlaces(query));
-
-    const params = querystring.stringify(query);
-    const qs = params ? `?${params}` : '';
-
-    return fetch(url(qs))
-      .then((res) => res.json())
-      .then((json) => dispatch(receivePlaces(query, json)))
-      .catch((error) => dispatch(receivePlaces(query, { errors: [ error ] })));
-  };
-}
-
 export function openSelection() {
   return {
     type: OPEN_SELECTION
   };
 }
 
-export function postAnswer(place, value) {
-  return (dispatch) => {
-    const { latitude, longitude } = place.position;
-    const params = querystring.stringify({
-      answer: value,
-      position: [ latitude, longitude ].join(',')
-    });
-    const qs = params ? `?${params}` : '';
-
-    return fetch(url(`/${place.id}/answer${qs}`), { method: 'POST' })
-      .then((res) => res.json())
-      .then((json) => dispatch(answer(json)))
-      .catch((error) => dispatch(answer({ errors: [ error ] })));
-  };
-}
-
-function receivePlaces(query, json) {
+function receivePlaces(query, result) {
   return {
     type: RECEIVE_PLACES,
-    errors: json.errors || [],
-    places: (json.data && json.data.places) || [],
+    errors: result.errors || [],
+    places: (result.data && result.data.places) || [],
     query
   };
 }
@@ -140,8 +131,4 @@ export function toggleSelectionOpen() {
   return {
     type: TOGGLE_SELECTION_OPEN
   };
-}
-
-function url(str) {
-  return `${process.env.REACT_APP_API_HOST}/places${str}`;
 }

@@ -147,9 +147,9 @@ class Map extends Component {
   }
 
   componentDidMount() {
-    const { fetchPlaces, getPosition } = this.props;
+    const { findPlaces, getPosition } = this.props;
 
-    fetchPlaces({ dominant: 'yes' });
+    findPlaces({ dominant: 'yes' });
     getPosition();
   }
 
@@ -213,11 +213,11 @@ class Map extends Component {
 }
 
 Map.propTypes = {
+  addAnswer: PropTypes.func.isRequired,
   deselectPlace: PropTypes.func.isRequired,
-  fetchPlaces: PropTypes.func.isRequired,
+  findPlaces: PropTypes.func.isRequired,
   getPosition: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
-  postAnswer: PropTypes.func.isRequired,
   selectPlace: PropTypes.func.isRequired,
   t: PropTypes.func.isRequired,
   toggleSelectionOpen: PropTypes.func.isRequired

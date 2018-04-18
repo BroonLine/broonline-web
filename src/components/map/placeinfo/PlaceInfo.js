@@ -32,7 +32,7 @@ import Progress, { ProgressBar } from '../../progress';
 
 import './PlaceInfo.css';
 
-// TODO: Implement postAnswer support
+// TODO: Implement addAnswer support
 // TODO: Handle requesting state
 // TODO: Handle local/session/persisted answer state to avoid duplicate answers
 
@@ -91,8 +91,8 @@ class PlaceInfo extends Component {
 }
 
 PlaceInfo.propTypes = {
+  addAnswer: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
-  postAnswer: PropTypes.func.isRequired,
   t: PropTypes.func.isRequired
 };
 
