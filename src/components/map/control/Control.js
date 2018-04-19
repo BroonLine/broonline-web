@@ -22,6 +22,8 @@
 
 // TODO: Remove workaround once available in react-google-maps
 
+/* eslint-disable */
+
 import canUseDOM from 'can-use-dom';
 import _ from 'lodash';
 import PropTypes from 'prop-types';

@@ -22,7 +22,7 @@
 
 // TODO: Remove workaround once available in react-google-maps
 
-/* global google */
+/* eslint-disable */
 
 import canUseDOM from 'can-use-dom';
 import invariant from 'invariant';

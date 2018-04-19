@@ -116,4 +116,8 @@ class NavBar extends Component {
 
 }
 
+NavBar.propTypes = {
+  t: PropTypes.func.isRequired
+};
+
 export default translate()(NavBar);
