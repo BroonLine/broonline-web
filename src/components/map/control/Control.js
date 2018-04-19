@@ -22,104 +22,48 @@
 
 // TODO: Remove workaround once available in react-google-maps
 
-/* global google */
-
 import canUseDOM from 'can-use-dom';
-import invariant from 'invariant';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
-import {
-  construct,
-  componentDidMount,
-  componentDidUpdate,
-  componentWillUnmount,
-} from 'react-google-maps/lib/utils/MapChildHelper';
+import { componentWillUnmount } from 'react-google-maps/lib/utils/MapChildHelper';
 
 import { MAP } from 'react-google-maps/lib/constants';
 
-const AUTO_COMPLETE = '__SECRET_AUTO_COMPLETE_DO_NOT_USE_OR_YOU_WILL_BE_FIRED';
-
 /**
- * A wrapper around `google.maps.places.Autocomplete` on the map
+ * A wrapper around any component as a control on the map
  *
- * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Autocomplete
+ * @see https://developers.google.com/maps/documentation/javascript/reference/3.exp/#control
  */
-export class Autocomplete extends PureComponent {
+export class Control extends PureComponent {
   static propTypes = {
     /**
-     * Where to put `<Autocomplete>` inside a `<GoogleMap>`
+     * Where to put `<Control>` inside a `<GoogleMap>`
      *
      * @example google.maps.ControlPosition.TOP_LEFT
      * @type number
      */
-    controlPosition: PropTypes.number,
-
-    /**
-     * @type LatLngBounds|LatLngBoundsLiteral
-     */
-    defaultBounds: PropTypes.any,
-
-    /**
-     * @type ComponentRestrictions
-     */
-    defaultComponentRestrictions: PropTypes.any,
-
-    /**
-     * @type AutocompleteOptions
-     */
-    defaultOptions: PropTypes.any,
-
-    /**
-     * @type LatLngBounds|LatLngBoundsLiteral
-     */
-    bounds: PropTypes.any,
-
-    /**
-     * @type ComponentRestrictions
-     */
-    componentRestrictions: PropTypes.any,
-
-    /**
-     * @type AutocompleteOptions
-     */
-    options: PropTypes.any,
-
-    /**
-     * function
-     */
-    onPlaceChanged: PropTypes.func,
+    controlPosition: PropTypes.number
   }
 
   static contextTypes = {
     [MAP]: PropTypes.object,
   }
 
-  state = {
-    [AUTO_COMPLETE]: null,
-  }
-
   componentWillMount() {
     if (!canUseDOM || this.containerElement) {
       return;
     }
-    invariant(google.maps.places, 'Did you include "libraries=places" in the URL?');
     this.containerElement = document.createElement('div');
     this.handleRenderChildToContainerElement();
     if (React.version.match(/^16/)) {
       return;
     }
-    this.handleInitializeAutocomplete();
   }
 
   componentDidMount() {
-    let autocomplete = this.state[AUTO_COMPLETE];
-    if (React.version.match(/^16/)) {
-      autocomplete = this.handleInitializeAutocomplete();
-    }
-    componentDidMount(this, autocomplete, eventMap);
     this.handleMountAtControlPosition();
   }
 
@@ -130,7 +74,6 @@ export class Autocomplete extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    componentDidUpdate(this, this.state[AUTO_COMPLETE], eventMap, updaterMap, prevProps);
     if (this.props.children !== prevProps.children) {
       this.handleRenderChildToContainerElement();
     }
@@ -151,19 +94,6 @@ export class Autocomplete extends PureComponent {
     }
   }
 
-  handleInitializeAutocomplete() {
-    /*
-     * @see https://developers.google.com/maps/documentation/javascript/3.exp/reference#Autocomplete
-     */
-    const autocomplete = new google.maps.places.Autocomplete(this.containerElement.querySelector('input'),
-        this.props.options);
-    construct(Autocomplete.propTypes, updaterMap, this.props, autocomplete);
-    this.setState({
-      [AUTO_COMPLETE]: autocomplete,
-    });
-    return autocomplete;
-  }
-
   handleRenderChildToContainerElement() {
     if (React.version.match(/^16/)) {
       return;
@@ -174,7 +104,7 @@ export class Autocomplete extends PureComponent {
   handleMountAtControlPosition() {
     if (isValidControlPosition(this.props.controlPosition)) {
       this.mountControlIndex = -1 + this.context[MAP].controls[this.props.controlPosition].push(
-          this.containerElement.firstChild);
+        this.containerElement.firstChild);
     }
   }
 
@@ -193,36 +123,8 @@ export class Autocomplete extends PureComponent {
     }
     return false;
   }
-
-  /**
-   * Returns the bounds to which query predictions are biased.
-   * @type LatLngBounds
-   * @public
-   */
-  getBounds() {
-    return this.state[AUTO_COMPLETE].getBounds();
-  }
-
-  /**
-   * Returns the query selected by the user, or `null` if no place has been found yet, to be used with `place_changed` event.
-   * @type PlaceResultnullplaces_changed
-   * @public
-   */
-  getPlace() {
-    return this.state[AUTO_COMPLETE].getPlace();
-  }
 }
 
-export default Autocomplete;
+export default Control;
 
 const isValidControlPosition = _.isNumber;
-
-const eventMap = {
-  onPlaceChanged: 'place_changed'
-};
-
-const updaterMap = {
-  bounds(instance, bounds) {
-    instance.setBounds(bounds);
-  }
-};

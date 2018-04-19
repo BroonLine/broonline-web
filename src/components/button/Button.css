@@ -33,6 +33,9 @@
   line-height: 1;
   border-radius: 2px;
 }
+.button:disabled {
+  opacity: .65;
+}
 .button:not(:disabled) {
   cursor: pointer;
 }

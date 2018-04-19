@@ -22,6 +22,7 @@
 
 /* global google */
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { GoogleMap, InfoWindow, Marker, withGoogleMap, withScriptjs } from 'react-google-maps';
@@ -30,9 +31,11 @@ import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { ScreenReaderOnly } from '../a11y';
 import * as placesActionCreators from '../../actions/places';
 import Autocomplete from './autocomplete';
 import Container, { Overlay } from '../container';
+import Control from './control';
 import Loader from '../loader';
 import PlaceInfo from './placeinfo';
 
@@ -40,10 +43,12 @@ import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
   autocompleteRefProvider,
+  clear,
   current,
   googleMapRefProvider,
   heatmapRefProvider,
   marker,
+  onClear,
   onCurrentClose,
   onMapClick,
   onMarkerClick,
@@ -52,6 +57,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
   placeholder,
   places = [],
   position,
+  searchRefProvider,
   zoom
 }) => {
   const data = places.map((place) => {
@@ -79,11 +85,23 @@ const InternalMap = withScriptjs(withGoogleMap(({
         }}
       >
         <input
+          ref={searchRefProvider}
           className="map__search"
           type="text"
           placeholder={placeholder}
         />
       </Autocomplete>
+      <Control controlPosition={google.maps.ControlPosition.TOP_LEFT}>
+        <button
+          className="map__clear"
+          title={clear}
+          type="button"
+          onClick={onClear}
+        >
+          <FontAwesomeIcon icon="times" />
+          <ScreenReaderOnly>{clear}</ScreenReaderOnly>
+        </button>
+      </Control>
       <HeatmapLayer
         ref={heatmapRefProvider}
         data={data}
@@ -129,6 +147,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
 InternalMap.propTypes = {
   autocompleteRefProvider: PropTypes.func,
+  clear: PropTypes.string.isRequired,
   current: PropTypes.shape({
     id: PropTypes.string.isRequired,
     position: PropTypes.shape({
@@ -147,6 +166,7 @@ InternalMap.propTypes = {
     }).isRequired,
     place: PropTypes.object
   }),
+  onClear: PropTypes.func,
   onCurrentClose: PropTypes.func,
   onMapClick: PropTypes.func,
   onMarkerClick: PropTypes.func,
@@ -157,6 +177,7 @@ InternalMap.propTypes = {
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
   }),
+  searchRefProvider: PropTypes.func,
   zoom: PropTypes.number
 };
 
@@ -172,6 +193,8 @@ class Map extends Component {
     this.autocompleteRefProvider = this.refProvider('autocomplete');
     this.googleMapRefProvider = this.refProvider('googleMap');
     this.heatmapRefProvider = this.refProvider('heatmap');
+    this.searchRefProvider = this.refProvider('search');
+    this.onClear = this.onClear.bind(this);
     this.onCurrentClose = this.onCurrentClose.bind(this);
     this.onMapClick = this.onMapClick.bind(this);
     this.onMarkerClick = this.onMarkerClick.bind(this);
@@ -185,6 +208,15 @@ class Map extends Component {
 
     findPlaces({ dominant: 'yes' });
     getPosition();
+  }
+
+  onClear() {
+    const { clearMarker } = this.props;
+    const { search } = this.state.refs;
+
+    search.value = '';
+
+    clearMarker();
   }
 
   onCurrentClose(event) {
@@ -260,7 +292,8 @@ class Map extends Component {
   onSearch() {
     const { clearMarker, openMarker, places, setMarker, setPosition, setZoom } = this.props;
     const { marker } = places;
-    const place = this.state.refs.autocomplete.getPlace();
+    const { autocomplete } = this.state.refs;
+    const place = autocomplete.getPlace();
 
     if (!(place && place.place_id)) {
       clearMarker();
@@ -285,8 +318,9 @@ class Map extends Component {
 
   onZoom() {
     const { setZoom } = this.props;
+    const { googleMap } = this.state.refs;
 
-    setZoom(this.state.refs.googleMap.getZoom());
+    setZoom(googleMap.getZoom());
   }
 
   refProvider(name) {
@@ -319,10 +353,12 @@ class Map extends Component {
         loadingElement={loader}
         mapElement={<div className="map" />}
         autocompleteRefProvider={this.autocompleteRefProvider}
+        clear={t('map.search.clear')}
         current={places.current}
         googleMapRefProvider={this.googleMapRefProvider}
         heatmapRefProvider={this.heatmapRefProvider}
         marker={places.marker}
+        onClear={this.onClear}
         onCurrentClose={this.onCurrentClose}
         onMapClick={this.onMapClick}
         onMarkerClick={this.onMarkerClick}
@@ -331,6 +367,7 @@ class Map extends Component {
         placeholder={t('map.search.placeholder')}
         places={places.places}
         position={places.position}
+        searchRefProvider={this.searchRefProvider}
         zoom={places.zoom}
       />
     );

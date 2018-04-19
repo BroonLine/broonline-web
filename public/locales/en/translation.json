@@ -10,6 +10,7 @@
   },
   "map": {
     "search": {
+      "clear": "Clear",
       "placeholder": "Find a chippie"
     }
   },

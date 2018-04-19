@@ -20,31 +20,6 @@
  * SOFTWARE.
  */
 
-* {
-  box-sizing: border-box;
-}
+import Control from './Control.js';
 
-html,
-body,
-main {
-  width: 100%;
-  height: 100%;
-}
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.42857143;
-  color: #333;
-  padding: 62px 0 0;
-}
-
-main {
-  position: relative;
-  background-color: #e5e3df;
-}
-
-a {
-  color: #337ab7;
-  text-decoration: none;
-}
+export default Control;
