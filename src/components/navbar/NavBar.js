@@ -86,9 +86,8 @@ class NavBar extends Component {
       { name: 'facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${encHost}`, icon: [ 'fab', 'facebook-square' ] },
       { name: 'googleplus', href: `https://plus.google.com/share?url=${encHost}`, icon: [ 'fab', 'google-plus' ] },
       { name: 'stumbleupon', href: `https://www.stumbleupon.com/submit?url=${encHost}`, icon: [ 'fab', 'stumbleupon-circle' ] },
-      { name: 'github', href: 'https://github.com/neocotic/broonline', icon: [ 'fab', 'github' ] },
-      { name: 'info', href: '#', icon: 'info-circle', internal: true },
-      { name: 'support', href: 'https://thebroonline.freshdesk.com', icon: 'life-ring' },
+      { name: 'github', href: 'https://github.com/BroonLine', icon: [ 'fab', 'github' ] },
+      { name: 'support', href: 'https://thebroonline.freshdesk.com', icon: 'life-ring' }
     ];
   }
 
