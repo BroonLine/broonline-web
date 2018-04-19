@@ -50,12 +50,12 @@ class PlaceInfo extends Component {
     const progressBars = [];
     if (percentages.yes > 0) {
       progressBars.push(<ProgressBar key="yes" status="positive" value={percentages.yes}>
-        {t('placeInfo.answer.yes')}
+        {place.answers.yes}
       </ProgressBar>);
     }
     if (percentages.no > 0) {
       progressBars.push(<ProgressBar key="no" status="negative" value={percentages.no}>
-        {t('placeInfo.answer.no')}
+        {place.answers.no}
       </ProgressBar>);
     }
 
@@ -75,7 +75,7 @@ class PlaceInfo extends Component {
             {t('placeInfo.answer.yes')}
           </Button>
           &nbsp;
-          <Button status="negative" disabled>
+          <Button className="float-right" status="negative" disabled>
             <FontAwesomeIcon icon="times" />
             &nbsp;
             {t('placeInfo.answer.no')}

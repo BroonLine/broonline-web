@@ -34,14 +34,7 @@ class Overlay extends Component {
 }
 
 Overlay.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string
-    ])),
-    PropTypes.element,
-    PropTypes.string
-  ])
+  children: PropTypes.any
 };
 
 export default Overlay;

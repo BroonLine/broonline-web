@@ -66,14 +66,7 @@ class ErrorBoundary extends Component {
 }
 
 ErrorBoundary.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string
-    ])),
-    PropTypes.element,
-    PropTypes.string
-  ]),
+  children: PropTypes.any,
   t: PropTypes.func.isRequired
 };
 

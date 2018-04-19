@@ -41,14 +41,7 @@ class Container extends Component {
 
 Container.propTypes = {
   center: PropTypes.bool,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string
-    ])),
-    PropTypes.element,
-    PropTypes.string
-  ])
+  children: PropTypes.any
 };
 
 export default Container;

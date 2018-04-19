@@ -46,7 +46,10 @@ class ProgressBar extends Component {
         aria-valuenow={value}
       >
         {children}
-        <ScreenReaderOnly>{formattedValue}</ScreenReaderOnly>
+        <ScreenReaderOnly>
+          &nbsp;
+          {formattedValue}
+        </ScreenReaderOnly>
       </div>
     );
   }
@@ -54,18 +57,11 @@ class ProgressBar extends Component {
 }
 
 ProgressBar.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string
-    ])),
-    PropTypes.element,
-    PropTypes.string
-  ]),
+  children: PropTypes.any,
   max: PropTypes.number,
   min: PropTypes.number,
-  value: PropTypes.number.isRequired,
-  status: PropTypes.oneOf([ 'default', 'negative', 'positive' ])
+  status: PropTypes.oneOf([ 'default', 'negative', 'positive' ]),
+  value: PropTypes.number.isRequired
 };
 
 export default ProgressBar;

@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -28,11 +29,11 @@ import './Button.css';
 class Button extends Component {
 
   render() {
-    const { children, disabled, onClick, status, type } = this.props;
+    const { children, className, disabled, onClick, status, type } = this.props;
 
     return (
       <button
-        className={`button button--${status || 'default'}`}
+        className={classNames('button', `button--${status || 'default'}`, className)}
         disabled={disabled}
         onClick={onClick}
         tabIndex={disabled ? -1 : null}
@@ -47,14 +48,8 @@ class Button extends Component {
 }
 
 Button.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string
-    ])),
-    PropTypes.element,
-    PropTypes.string
-  ]),
+  children: PropTypes.any,
+  className: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   status: PropTypes.oneOf([ 'default', 'negative', 'positive' ]),

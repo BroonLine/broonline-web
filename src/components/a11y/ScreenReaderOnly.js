@@ -34,14 +34,7 @@ class ScreenReaderOnly extends Component {
 }
 
 ScreenReaderOnly.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string
-    ])),
-    PropTypes.element,
-    PropTypes.string
-  ])
+  children: PropTypes.any
 };
 
 export default ScreenReaderOnly;
