@@ -33,15 +33,16 @@
   color: #565656;
   font-size: 1rem;
   line-height: 1;
-}
-.map__clear:hover {
-  color: #3d3d3d;
+  transition: color .15s ease-in-out;
 }
 .map__clear:disabled {
   opacity: .65;
 }
 .map__clear:not(:disabled) {
   cursor: pointer;
+}
+.map__clear:not(:disabled):hover {
+  color: #3d3d3d;
 }
 
 .map__search {

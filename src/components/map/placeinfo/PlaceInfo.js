@@ -69,13 +69,13 @@ class PlaceInfo extends Component {
         <Progress>{progressBars}</Progress>
 
         <div className="place-info__actions">
-          <Button status="positive">
+          <Button status="positive" disabled>
             <FontAwesomeIcon icon="check" />
             &nbsp;
             {t('placeInfo.answer.yes')}
           </Button>
           &nbsp;
-          <Button status="negative">
+          <Button status="negative" disabled>
             <FontAwesomeIcon icon="times" />
             &nbsp;
             {t('placeInfo.answer.no')}

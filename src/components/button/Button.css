@@ -32,6 +32,9 @@
   font-size: 1rem;
   line-height: 1;
   border-radius: 2px;
+  transition: color .15s ease-in-out,
+              background-color .15s ease-in-out,
+              border-color .15s ease-in-out;
 }
 .button:disabled {
   opacity: .65;
@@ -45,7 +48,7 @@
   background-color: #a0522d;
   border-color: #a0522d;
 }
-.button--default:hover {
+.button--default:not(:disabled):hover {
   background-color: #824325;
   border-color: #783e22;
 }
@@ -55,7 +58,7 @@
   background-color: #dc3545;
   border-color: #dc3545;
 }
-.button--negative:hover {
+.button--negative:not(:disabled):hover {
   background-color: #c82333;
   border-color: #bd2130;
 }
@@ -65,7 +68,7 @@
   background-color: #28a745;
   border-color: #28a745;
 }
-.button--positive:hover {
+.button--positive:not(:disabled):hover {
   background-color: #218838;
   border-color: #1e7e34;
 }
