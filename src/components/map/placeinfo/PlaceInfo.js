@@ -29,7 +29,6 @@ import { bindActionCreators } from 'redux';
 
 import * as placesActionCreators from '../../../actions/places';
 import Button from '../../button';
-import Loader from '../../loader';
 import Progress, { ProgressBar } from '../../progress';
 
 import './PlaceInfo.css';
@@ -41,11 +40,7 @@ import './PlaceInfo.css';
 class PlaceInfo extends Component {
 
   render() {
-    const { places, t } = this.props;
-    const { place } = places.selected;
-    if (!place) {
-      return <Loader />;
-    }
+    const { place, t } = this.props;
 
     const total = place.answers.no + place.answers.yes;
     const percentages = {
@@ -94,6 +89,7 @@ class PlaceInfo extends Component {
 
 PlaceInfo.propTypes = {
   addAnswer: PropTypes.func.isRequired,
+  place: PropTypes.object.isRequired,
   places: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired
 };

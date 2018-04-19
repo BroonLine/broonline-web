@@ -22,17 +22,20 @@
 
 import {
   ANSWER,
-  CLOSE_SELECTION,
-  DESELECT_PLACE,
-  OPEN_SELECTION,
-  OPENED_SELECTION,
+  CLEAR_CURRENT,
+  CLEAR_MARKER,
+  CLOSED_CURRENT,
+  CLOSED_MARKER,
+  OPENED_CURRENT,
+  OPENED_MARKER,
   RECEIVE_PLACES,
   REQUEST_PLACES,
-  SELECT_PLACE,
+  SET_CURRENT,
+  SET_MARKER,
   SET_POSITION
 } from '../actions/places';
 
-// TODO: Split selection stuff into separate reducers
+// TODO: Split current & marker reducers into separate namespaces/files?
 
 const actionHandlers = {
   [ANSWER]: (action, state) => {
@@ -57,26 +60,31 @@ const actionHandlers = {
       places: placesArray
     };
   },
-  [CLOSE_SELECTION]: () => ({
-    openSelected: false
+  [CLEAR_CURRENT]: () => ({
+    current: null
   }),
-  [DESELECT_PLACE]: () => ({
-    openSelected: false,
-    selected: null
+  [CLEAR_MARKER]: () => ({
+    marker: null
   }),
-  [OPEN_SELECTION]: () => ({
-    openSelected: true
+  [CLOSED_CURRENT]: (action, state) => ({
+    current: Object.assign({}, state.current, { isOpen: false })
   }),
-  [OPENED_SELECTION]: (action) => ({
+  [CLOSED_MARKER]: (action, state) => ({
+    marker: Object.assign({}, state.marker, { isOpen: false })
+  }),
+  [OPENED_CURRENT]: (action, state) => ({
     hasErrors: action.errors.length > 0,
-    selected: action.place ? {
-      id: action.place.id,
-      location: {
-        lat: action.place.position.latitude,
-        lng: action.place.position.longitude
-      },
+    current: Object.assign({}, state.current, {
+      isOpen: action.place != null,
       place: action.place
-    } : null
+    })
+  }),
+  [OPENED_MARKER]: (action, state) => ({
+    hasErrors: action.errors.length > 0,
+    marker: Object.assign({}, state.marker, {
+      isOpen: action.place != null,
+      place: action.place
+    })
   }),
   [RECEIVE_PLACES]: (action) => ({
     hasErrors: action.errors.length > 0,
@@ -97,12 +105,20 @@ const actionHandlers = {
     isFetching: true,
     query: action.query
   }),
-  [SELECT_PLACE]: (action) => ({
-    openSelected: false,
-    selected: action.id && action.location ? {
+  [SET_CURRENT]: (action) => ({
+    current: {
       id: action.id,
-      location: action.location
-    } : null
+      isOpen: false,
+      position: action.position
+    }
+  }),
+  [SET_MARKER]: (action) => ({
+    marker: {
+      id: action.id,
+      isOpen: false,
+      position: action.position
+    },
+    position: action.position
   }),
   [SET_POSITION]: (action) => ({
     position: action.position
@@ -111,10 +127,11 @@ const actionHandlers = {
 
 function places(
   state = {
+    current: null,
     hasErrors: false,
     isFetching: false,
     mapping: {},
-    openSelected: false,
+    marker: null,
     places: [],
     position: {
       lat: 56.074968,
@@ -122,8 +139,7 @@ function places(
     },
     query: {
       dominant: 'yes'
-    },
-    selected: null
+    }
   },
   action = {}
 ) {

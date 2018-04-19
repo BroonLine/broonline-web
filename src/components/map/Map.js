@@ -39,15 +39,16 @@ import PlaceInfo from './placeinfo';
 import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
-  isOpen,
+  current,
+  marker,
   onAutocompleteMounted,
-  onClick,
-  onSelect,
-  onToggleOpen,
+  onCurrentClose,
+  onMapClick,
+  onMarkerClick,
+  onSearch,
   placeholder,
   places = [],
-  position,
-  select
+  position
 }) => {
   const data = places.map((place) => {
     return new google.maps.LatLng(place.position.latitude, place.position.longitude);
@@ -60,13 +61,13 @@ const InternalMap = withScriptjs(withGoogleMap(({
         fullscreenControl: false,
         mapTypeControl: false
       }}
-      onClick={onClick}
-      zoom={select ? 17 : 8}
+      onClick={onMapClick}
+      zoom={marker ? 17 : 8}
     >
       <Autocomplete
         ref={onAutocompleteMounted}
         controlPosition={google.maps.ControlPosition.TOP_LEFT}
-        onPlaceChanged={onSelect}
+        onPlaceChanged={onSearch}
         options={{
           types: [ 'establishment' ]
         }}
@@ -101,12 +102,18 @@ const InternalMap = withScriptjs(withGoogleMap(({
           radius: 25
         }}
       />
-      {select && <Marker
-        onClick={onToggleOpen}
-        position={select.location}
+      {current && current.isOpen && <InfoWindow
+        onCloseClick={onCurrentClose}
+        position={current.position}
       >
-        {isOpen && <InfoWindow onCloseClick={onToggleOpen}>
-          <PlaceInfo />
+        <PlaceInfo place={current.place} />
+      </InfoWindow>}
+      {marker && <Marker
+        onClick={onMarkerClick}
+        position={marker.position}
+      >
+        {marker.isOpen && <InfoWindow onCloseClick={onMarkerClick}>
+          <PlaceInfo place={marker.place} />
         </InfoWindow>}
       </Marker>}
     </GoogleMap>
@@ -114,18 +121,33 @@ const InternalMap = withScriptjs(withGoogleMap(({
 }));
 
 InternalMap.propTypes = {
-  isOpen: PropTypes.bool,
+  current: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    position: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired
+    }).isRequired,
+    place: PropTypes.object
+  }),
+  marker: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    position: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired
+    }).isRequired,
+    place: PropTypes.object
+  }),
   onAutocompleteMounted: PropTypes.func,
-  onClick: PropTypes.func,
-  onToggleOpen: PropTypes.func,
-  onSelect: PropTypes.func,
+  onCurrentClose: PropTypes.func,
+  onMapClick: PropTypes.func,
+  onMarkerClick: PropTypes.func,
+  onSearch: PropTypes.func,
   placeholder: PropTypes.string.isRequired,
   places: PropTypes.array,
   position: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
-  }),
-  select: PropTypes.object
+  })
 };
 
 class Map extends Component {
@@ -138,9 +160,10 @@ class Map extends Component {
     };
 
     this.onAutocompleteMounted = this.onAutocompleteMounted.bind(this);
-    this.onClick = this.onClick.bind(this);
-    this.onSelect = this.onSelect.bind(this);
-    this.onToggleOpen = this.onToggleOpen.bind(this);
+    this.onCurrentClose = this.onCurrentClose.bind(this);
+    this.onMapClick = this.onMapClick.bind(this);
+    this.onMarkerClick = this.onMarkerClick.bind(this);
+    this.onSearch = this.onSearch.bind(this);
   }
 
   componentDidMount() {
@@ -158,26 +181,75 @@ class Map extends Component {
     }));
   }
 
-  onClick(event) {
-    if (event.placeId) {
-      const { deselectPlace, selectPlace } = this.props;
-      const { latLng: location } = event;
+  onCurrentClose(event) {
+    const { closeCurrent } = this.props;
 
-      deselectPlace();
-      selectPlace(event.placeId, {
-        lat: location.lat(),
-        lng: location.lng()
-      });
+    closeCurrent();
 
+    if (event) {
       event.stop();
     }
   }
 
-  onSelect() {
-    const { deselectPlace, selectPlace, setPosition } = this.props;
+  onMapClick(event) {
+    const { placeId } = event;
+    if (!placeId) {
+      return;
+    }
+
+    const { clearCurrent, closeCurrent, openCurrent, places, setCurrent } = this.props;
+    const { current } = places;
+    const { latLng: location } = event;
+    const position = {
+      lat: location.lat(),
+      lng: location.lng()
+    };
+
+    if (current) {
+      if (current.id !== placeId) {
+        clearCurrent();
+        setCurrent(placeId, position);
+
+        openCurrent();
+      } else if (current.isOpen) {
+        closeCurrent();
+      } else {
+        openCurrent();
+      }
+    } else {
+      setCurrent(placeId, position);
+
+      openCurrent();
+    }
+
+    if (event) {
+      event.stop();
+    }
+  }
+
+  onMarkerClick(event) {
+    const { closeMarker, places, openMarker } = this.props;
+    const { marker } = places;
+    if (!marker) {
+      return;
+    }
+
+    if (marker.isOpen) {
+      closeMarker();
+    } else {
+      openMarker();
+    }
+
+    if (event) {
+      event.stop();
+    }
+  }
+
+  onSearch() {
+    const { clearMarker, openMarker, setMarker } = this.props;
     const place = this.state.refs.autocomplete.getPlace();
 
-    deselectPlace();
+    clearMarker();
 
     if (place && place.place_id) {
       const { location } = place.geometry;
@@ -186,15 +258,9 @@ class Map extends Component {
         lng: location.lng()
       };
 
-      selectPlace(place.place_id, position);
-      setPosition(position);
+      setMarker(place.place_id, position);
+      openMarker();
     }
-  }
-
-  onToggleOpen() {
-    const { toggleSelectionOpen } = this.props;
-
-    toggleSelectionOpen();
   }
 
   render() {
@@ -216,15 +282,16 @@ class Map extends Component {
         containerElement={<Container />}
         loadingElement={loader}
         mapElement={<div className="map" />}
-        isOpen={places.openSelected}
+        current={places.current}
+        marker={places.marker}
         onAutocompleteMounted={this.onAutocompleteMounted}
-        onClick={this.onClick}
-        onSelect={this.onSelect}
-        onToggleOpen={this.onToggleOpen}
+        onCurrentClose={this.onCurrentClose}
+        onMapClick={this.onMapClick}
+        onMarkerClick={this.onMarkerClick}
+        onSearch={this.onSearch}
         placeholder={t('map.search.placeholder')}
         places={places.places}
         position={places.position}
-        select={places.selected}
       />
     );
   }
@@ -233,14 +300,19 @@ class Map extends Component {
 
 Map.propTypes = {
   addAnswer: PropTypes.func.isRequired,
-  deselectPlace: PropTypes.func.isRequired,
+  clearCurrent: PropTypes.func.isRequired,
+  clearMarker: PropTypes.func.isRequired,
+  closeCurrent: PropTypes.func.isRequired,
+  closeMarker: PropTypes.func.isRequired,
   findPlaces: PropTypes.func.isRequired,
   getPosition: PropTypes.func.isRequired,
+  openCurrent: PropTypes.func.isRequired,
+  openMarker: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
-  selectPlace: PropTypes.func.isRequired,
+  setCurrent: PropTypes.func.isRequired,
+  setMarker: PropTypes.func.isRequired,
   setPosition: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
-  toggleSelectionOpen: PropTypes.func.isRequired
+  t: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state) => ({
