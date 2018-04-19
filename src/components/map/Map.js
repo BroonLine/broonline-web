@@ -203,15 +203,21 @@ class Map extends Component {
       return;
     }
 
-    const { clearCurrent, closeCurrent, openCurrent, places, setCurrent } = this.props;
-    const { current } = places;
+    const { clearCurrent, closeCurrent, closeMarker, openCurrent, openMarker, places, setCurrent } = this.props;
+    const { current, marker } = places;
     const { latLng: location } = event;
     const position = {
       lat: location.lat(),
       lng: location.lng()
     };
 
-    if (current) {
+    if (marker && marker.id === placeId) {
+      if (marker.isOpen) {
+        closeMarker();
+      } else {
+        openMarker();
+      }
+    } else if (current) {
       if (current.id !== placeId) {
         clearCurrent();
         setCurrent(placeId, position);
