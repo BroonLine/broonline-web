@@ -39,16 +39,20 @@ import PlaceInfo from './placeinfo';
 import './Map.css';
 
 const InternalMap = withScriptjs(withGoogleMap(({
+  autocompleteRefProvider,
   current,
+  googleMapRefProvider,
+  heatmapRefProvider,
   marker,
-  onAutocompleteMounted,
   onCurrentClose,
   onMapClick,
   onMarkerClick,
   onSearch,
+  onZoom,
   placeholder,
   places = [],
-  position
+  position,
+  zoom
 }) => {
   const data = places.map((place) => {
     return new google.maps.LatLng(place.position.latitude, place.position.longitude);
@@ -56,16 +60,18 @@ const InternalMap = withScriptjs(withGoogleMap(({
 
   return (
     <GoogleMap
+      ref={googleMapRefProvider}
       center={position}
       defaultOptions={{
         fullscreenControl: false,
         mapTypeControl: false
       }}
       onClick={onMapClick}
-      zoom={marker ? 17 : 8}
+      onZoomChanged={onZoom}
+      zoom={zoom}
     >
       <Autocomplete
-        ref={onAutocompleteMounted}
+        ref={autocompleteRefProvider}
         controlPosition={google.maps.ControlPosition.TOP_LEFT}
         onPlaceChanged={onSearch}
         options={{
@@ -79,6 +85,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
         />
       </Autocomplete>
       <HeatmapLayer
+        ref={heatmapRefProvider}
         data={data}
         options={{
           gradient: [
@@ -121,6 +128,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
 }));
 
 InternalMap.propTypes = {
+  autocompleteRefProvider: PropTypes.func,
   current: PropTypes.shape({
     id: PropTypes.string.isRequired,
     position: PropTypes.shape({
@@ -129,6 +137,8 @@ InternalMap.propTypes = {
     }).isRequired,
     place: PropTypes.object
   }),
+  googleMapRefProvider: PropTypes.func,
+  heatmapRefProvider: PropTypes.func,
   marker: PropTypes.shape({
     id: PropTypes.string.isRequired,
     position: PropTypes.shape({
@@ -137,7 +147,6 @@ InternalMap.propTypes = {
     }).isRequired,
     place: PropTypes.object
   }),
-  onAutocompleteMounted: PropTypes.func,
   onCurrentClose: PropTypes.func,
   onMapClick: PropTypes.func,
   onMarkerClick: PropTypes.func,
@@ -147,7 +156,8 @@ InternalMap.propTypes = {
   position: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
-  })
+  }),
+  zoom: PropTypes.number
 };
 
 class Map extends Component {
@@ -159,11 +169,15 @@ class Map extends Component {
       refs: {}
     };
 
-    this.onAutocompleteMounted = this.onAutocompleteMounted.bind(this);
+    this.autocompleteRefProvider = this.refProvider('autocomplete');
+    this.googleMapRefProvider = this.refProvider('googleMap');
+    this.heatmapRefProvider = this.refProvider('heatmap');
     this.onCurrentClose = this.onCurrentClose.bind(this);
     this.onMapClick = this.onMapClick.bind(this);
     this.onMarkerClick = this.onMarkerClick.bind(this);
     this.onSearch = this.onSearch.bind(this);
+    this.onZoom = this.onZoom.bind(this);
+    this.refProvider = this.refProvider.bind(this);
   }
 
   componentDidMount() {
@@ -171,14 +185,6 @@ class Map extends Component {
 
     findPlaces({ dominant: 'yes' });
     getPosition();
-  }
-
-  onAutocompleteMounted(ref) {
-    this.setState((prevState) => ({
-      refs: Object.assign({}, prevState.refs, {
-        autocomplete: ref
-      })
-    }));
   }
 
   onCurrentClose(event) {
@@ -246,21 +252,45 @@ class Map extends Component {
   }
 
   onSearch() {
-    const { clearMarker, openMarker, setMarker } = this.props;
+    const { clearMarker, openMarker, places, setMarker, setPosition, setZoom } = this.props;
+    const { marker } = places;
     const place = this.state.refs.autocomplete.getPlace();
 
-    clearMarker();
-
-    if (place && place.place_id) {
+    if (!(place && place.place_id)) {
+      clearMarker();
+    } else {
       const { location } = place.geometry;
       const position = {
         lat: location.lat(),
         lng: location.lng()
       };
 
-      setMarker(place.place_id, position);
+      if (!marker || marker.id !== place.place_id) {
+        clearMarker();
+        setMarker(place.place_id, position);
+      }
+
+      setPosition(position);
+      setZoom(17);
+
       openMarker();
     }
+  }
+
+  onZoom() {
+    const { setZoom } = this.props;
+
+    setZoom(this.state.refs.googleMap.getZoom());
+  }
+
+  refProvider(name) {
+    return (ref) => {
+      this.setState((prevState) => ({
+        refs: Object.assign({}, prevState.refs, {
+          [name]: ref
+        })
+      }));
+    };
   }
 
   render() {
@@ -282,16 +312,20 @@ class Map extends Component {
         containerElement={<Container />}
         loadingElement={loader}
         mapElement={<div className="map" />}
+        autocompleteRefProvider={this.autocompleteRefProvider}
         current={places.current}
+        googleMapRefProvider={this.googleMapRefProvider}
+        heatmapRefProvider={this.heatmapRefProvider}
         marker={places.marker}
-        onAutocompleteMounted={this.onAutocompleteMounted}
         onCurrentClose={this.onCurrentClose}
         onMapClick={this.onMapClick}
         onMarkerClick={this.onMarkerClick}
         onSearch={this.onSearch}
+        onZoom={this.onZoom}
         placeholder={t('map.search.placeholder')}
         places={places.places}
         position={places.position}
+        zoom={places.zoom}
       />
     );
   }
@@ -312,6 +346,7 @@ Map.propTypes = {
   setCurrent: PropTypes.func.isRequired,
   setMarker: PropTypes.func.isRequired,
   setPosition: PropTypes.func.isRequired,
+  setZoom: PropTypes.func.isRequired,
   t: PropTypes.func.isRequired
 };
 

@@ -32,7 +32,8 @@ import {
   REQUEST_PLACES,
   SET_CURRENT,
   SET_MARKER,
-  SET_POSITION
+  SET_POSITION,
+  SET_ZOOM
 } from '../actions/places';
 
 // TODO: Split current & marker reducers into separate namespaces/files?
@@ -117,11 +118,13 @@ const actionHandlers = {
       id: action.id,
       isOpen: false,
       position: action.position
-    },
-    position: action.position
+    }
   }),
   [SET_POSITION]: (action) => ({
     position: action.position
+  }),
+  [SET_ZOOM]: (action) => ({
+    zoom: action.zoom
   })
 };
 
@@ -139,7 +142,8 @@ function places(
     },
     query: {
       dominant: 'yes'
-    }
+    },
+    zoom: 8
   },
   action = {}
 ) {

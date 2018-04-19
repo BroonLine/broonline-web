@@ -34,6 +34,7 @@ export const REQUEST_PLACES = 'REQUEST_PLACES';
 export const SET_CURRENT = 'SET_CURRENT';
 export const SET_MARKER = 'SET_MARKER';
 export const SET_POSITION = 'SET_POSITION';
+export const SET_ZOOM = 'SET_ZOOM';
 
 // TODO: Split current & marker actions into separate namespaces/files?
 
@@ -220,5 +221,12 @@ export function setPosition(position) {
       lat: position.lat != null ? position.lat : position.latitude,
       lng: position.lng != null ? position.lng : position.longitude
     }
+  };
+}
+
+export function setZoom(zoom) {
+  return {
+    type: SET_ZOOM,
+    zoom
   };
 }
