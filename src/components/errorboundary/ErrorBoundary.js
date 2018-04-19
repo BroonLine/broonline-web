@@ -48,7 +48,6 @@ class ErrorBoundary extends Component {
     const { hasError } = this.state;
     const { t } = this.props;
 
-    // TODO: Improve format and styling of error
     if (hasError) {
       return (
         <Container center>

@@ -127,7 +127,7 @@ const InternalMap = withScriptjs(withGoogleMap(({
           radius: 25
         }}
       />
-      {current && current.isOpen && <InfoWindow
+      {current && (!marker || marker.id !== current.id) && current.isOpen && <InfoWindow
         onCloseClick={onCurrentClose}
         position={current.position}
       >
@@ -137,8 +137,8 @@ const InternalMap = withScriptjs(withGoogleMap(({
         onClick={onMarkerClick}
         position={marker.position}
       >
-        {marker.isOpen && <InfoWindow onCloseClick={onMarkerClick}>
-          <PlaceInfo place={marker.place} />
+        {current && current.id === marker.id && current.isOpen && <InfoWindow onCloseClick={onMarkerClick}>
+          <PlaceInfo place={current.place} />
         </InfoWindow>}
       </Marker>}
     </GoogleMap>
@@ -150,6 +150,7 @@ InternalMap.propTypes = {
   clear: PropTypes.string.isRequired,
   current: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired,
     position: PropTypes.shape({
       lat: PropTypes.number.isRequired,
       lng: PropTypes.number.isRequired
@@ -163,8 +164,7 @@ InternalMap.propTypes = {
     position: PropTypes.shape({
       lat: PropTypes.number.isRequired,
       lng: PropTypes.number.isRequired
-    }).isRequired,
-    place: PropTypes.object
+    }).isRequired
   }),
   onClear: PropTypes.func,
   onCurrentClose: PropTypes.func,
@@ -235,21 +235,15 @@ class Map extends Component {
       return;
     }
 
-    const { clearCurrent, closeCurrent, closeMarker, openCurrent, openMarker, places, setCurrent } = this.props;
-    const { current, marker } = places;
+    const { clearCurrent, closeCurrent, openCurrent, places, setCurrent } = this.props;
+    const { current } = places;
     const { latLng: location } = event;
     const position = {
       lat: location.lat(),
       lng: location.lng()
     };
 
-    if (marker && marker.id === placeId) {
-      if (marker.isOpen) {
-        closeMarker();
-      } else {
-        openMarker();
-      }
-    } else if (current) {
+    if (current) {
       if (current.id !== placeId) {
         clearCurrent();
         setCurrent(placeId, position);
@@ -272,16 +266,21 @@ class Map extends Component {
   }
 
   onMarkerClick(event) {
-    const { closeMarker, places, openMarker } = this.props;
-    const { marker } = places;
+    const { clearCurrent, closeCurrent, openCurrent, places, setCurrent } = this.props;
+    const { current, marker } = places;
     if (!marker) {
       return;
     }
 
-    if (marker.isOpen) {
-      closeMarker();
+    if (!current || current.id !== marker.id) {
+      clearCurrent();
+      setCurrent(marker.id, marker.position);
+
+      openCurrent();
+    } else if (current.isOpen) {
+      closeCurrent();
     } else {
-      openMarker();
+      openCurrent();
     }
 
     if (event) {
@@ -290,7 +289,7 @@ class Map extends Component {
   }
 
   onSearch() {
-    const { clearMarker, openMarker, places, setMarker, setPosition, setZoom } = this.props;
+    const { clearCurrent, clearMarker, openCurrent, places, setCurrent, setMarker, setPosition, setZoom } = this.props;
     const { marker } = places;
     const { autocomplete } = this.state.refs;
     const place = autocomplete.getPlace();
@@ -305,14 +304,16 @@ class Map extends Component {
       };
 
       if (!marker || marker.id !== place.place_id) {
+        clearCurrent();
         clearMarker();
         setMarker(place.place_id, position);
+        setCurrent(place.place_id, position);
       }
 
       setPosition(position);
       setZoom(17);
 
-      openMarker();
+      openCurrent();
     }
   }
 
@@ -380,11 +381,9 @@ Map.propTypes = {
   clearCurrent: PropTypes.func.isRequired,
   clearMarker: PropTypes.func.isRequired,
   closeCurrent: PropTypes.func.isRequired,
-  closeMarker: PropTypes.func.isRequired,
   findPlaces: PropTypes.func.isRequired,
   getPosition: PropTypes.func.isRequired,
   openCurrent: PropTypes.func.isRequired,
-  openMarker: PropTypes.func.isRequired,
   places: PropTypes.object.isRequired,
   setCurrent: PropTypes.func.isRequired,
   setMarker: PropTypes.func.isRequired,

@@ -26,17 +26,13 @@ export const ANSWER = 'ANSWER';
 export const CLEAR_CURRENT = 'CLEAR_CURRENT';
 export const CLEAR_MARKER = 'CLEAR_MARKER';
 export const CLOSED_CURRENT = 'CLOSED_CURRENT';
-export const CLOSED_MARKER = 'CLOSED_MARKER';
 export const OPENED_CURRENT = 'OPENED_CURRENT';
-export const OPENED_MARKER = 'OPENED_MARKER';
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
 export const SET_CURRENT = 'SET_CURRENT';
 export const SET_MARKER = 'SET_MARKER';
 export const SET_POSITION = 'SET_POSITION';
 export const SET_ZOOM = 'SET_ZOOM';
-
-// TODO: Split current & marker actions into separate namespaces/files?
 
 export function addAnswer(id, value) {
   return async(dispatch) => {
@@ -77,26 +73,9 @@ export function closeCurrent() {
   };
 }
 
-export function closeMarker() {
-  return (dispatch, getState) => {
-    const state = getState();
-    const { marker } = state.places;
-
-    if (marker) {
-      dispatch(closedMarker());
-    }
-  };
-}
-
 function closedCurrent() {
   return {
     type: CLOSED_CURRENT
-  };
-}
-
-function closedMarker() {
-  return {
-    type: CLOSED_MARKER
   };
 }
 
@@ -128,8 +107,6 @@ export function openCurrent() {
       return;
     }
 
-    closeMarker()(dispatch, getState);
-
     const result = current.place ? {
       data: {
         place: current.place
@@ -140,37 +117,9 @@ export function openCurrent() {
   };
 }
 
-export function openMarker() {
-  return async(dispatch, getState) => {
-    const state = getState();
-    const { marker } = state.places;
-    if (!marker) {
-      return;
-    }
-
-    closeCurrent()(dispatch, getState);
-
-    const result = marker.place ? {
-      data: {
-        place: marker.place
-      }
-    } : await places.findById(marker.id, { expand: true });
-
-    dispatch(openedMarker(result));
-  };
-}
-
 function openedCurrent(result) {
   return {
     type: OPENED_CURRENT,
-    errors: result.errors || [],
-    place: result.data ? result.data.place : null
-  };
-}
-
-function openedMarker(result) {
-  return {
-    type: OPENED_MARKER,
     errors: result.errors || [],
     place: result.data ? result.data.place : null
   };

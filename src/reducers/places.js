@@ -25,9 +25,7 @@ import {
   CLEAR_CURRENT,
   CLEAR_MARKER,
   CLOSED_CURRENT,
-  CLOSED_MARKER,
   OPENED_CURRENT,
-  OPENED_MARKER,
   RECEIVE_PLACES,
   REQUEST_PLACES,
   SET_CURRENT,
@@ -35,8 +33,6 @@ import {
   SET_POSITION,
   SET_ZOOM
 } from '../actions/places';
-
-// TODO: Split current & marker reducers into separate namespaces/files?
 
 const actionHandlers = {
   [ANSWER]: (action, state) => {
@@ -70,19 +66,9 @@ const actionHandlers = {
   [CLOSED_CURRENT]: (action, state) => ({
     current: Object.assign({}, state.current, { isOpen: false })
   }),
-  [CLOSED_MARKER]: (action, state) => ({
-    marker: Object.assign({}, state.marker, { isOpen: false })
-  }),
   [OPENED_CURRENT]: (action, state) => ({
     hasErrors: action.errors.length > 0,
     current: Object.assign({}, state.current, {
-      isOpen: action.place != null,
-      place: action.place
-    })
-  }),
-  [OPENED_MARKER]: (action, state) => ({
-    hasErrors: action.errors.length > 0,
-    marker: Object.assign({}, state.marker, {
       isOpen: action.place != null,
       place: action.place
     })
@@ -116,7 +102,6 @@ const actionHandlers = {
   [SET_MARKER]: (action) => ({
     marker: {
       id: action.id,
-      isOpen: false,
       position: action.position
     }
   }),
