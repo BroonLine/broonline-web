@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { translate } from 'react-i18next';
