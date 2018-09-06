@@ -25,10 +25,13 @@ import querystring from 'querystring';
 import fetch from '../fetch';
 
 export function addAnswer(placeId, options) {
-  const params = querystring.stringify(options);
-  const qs = params ? `?${params}` : '';
-
-  return fetch(url(`/${placeId}/answer${qs}`), { method: 'POST' })
+  return fetch(url(`/${placeId}/answers`), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(options)
+  })
     .then((res) => res.json())
     .catch(handleError);
 }
@@ -53,7 +56,6 @@ export function findById(placeId, options) {
 
 function handleError(error) {
   return {
-    status: 500,
     errors: [ { msg: error.message } ]
   };
 }

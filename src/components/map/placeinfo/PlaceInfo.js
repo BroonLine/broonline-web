@@ -42,20 +42,21 @@ class PlaceInfo extends Component {
   render() {
     const { place, t } = this.props;
 
-    const total = place.answers.no + place.answers.yes;
+    const { answerSummary } = place;
+    const { total } = answerSummary;
     const percentages = {
-      no: Math.round((place.answers.no / total) * 100),
-      yes: Math.round((place.answers.yes / total) * 100)
+      false: Math.round((answerSummary.false / total) * 100),
+      true: Math.round((answerSummary.true / total) * 100)
     };
     const progressBars = [];
-    if (percentages.yes > 0) {
-      progressBars.push(<ProgressBar key="yes" status="positive" value={percentages.yes}>
-        {place.answers.yes}
+    if (percentages.true > 0) {
+      progressBars.push(<ProgressBar key="true" status="positive" value={percentages.true}>
+        {answerSummary.true}
       </ProgressBar>);
     }
-    if (percentages.no > 0) {
-      progressBars.push(<ProgressBar key="no" status="negative" value={percentages.no}>
-        {place.answers.no}
+    if (percentages.false > 0) {
+      progressBars.push(<ProgressBar key="false" status="negative" value={percentages.false}>
+        {answerSummary.false}
       </ProgressBar>);
     }
 
@@ -72,13 +73,13 @@ class PlaceInfo extends Component {
           <Button status="positive" disabled>
             <FontAwesomeIcon icon="check" />
             &nbsp;
-            {t('placeInfo.answer.yes')}
+            {t('placeInfo.answer.true')}
           </Button>
           &nbsp;
           <Button className="float-right" status="negative" disabled>
             <FontAwesomeIcon icon="times" />
             &nbsp;
-            {t('placeInfo.answer.no')}
+            {t('placeInfo.answer.false')}
           </Button>
         </div>
       </div>

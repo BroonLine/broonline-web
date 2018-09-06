@@ -21,13 +21,15 @@
  */
 
 import {
-  ANSWER,
   CLEAR_CURRENT,
   CLEAR_MARKER,
   CLOSED_CURRENT,
+  CONFIRM_ANSWER,
+  FAIL,
   OPENED_CURRENT,
   RECEIVE_PLACES,
   REQUEST_PLACES,
+  SEND_ANSWER,
   SET_CURRENT,
   SET_MARKER,
   SET_POSITION,
@@ -35,28 +37,6 @@ import {
 } from '../actions/places';
 
 const actionHandlers = {
-  [ANSWER]: (action, state) => {
-    const { errors, place } = action;
-    let mapping = state.mapping;
-    let placesArray = state.places;
-
-    if (place) {
-      const entry = mapping[place.id] || { index: placesArray.length };
-      entry.place = place;
-
-      mapping = Object.assign({}, mapping, {
-        [place.id]: entry
-      });
-      placesArray = placesArray.slice();
-      placesArray.splice(entry.index, 1, place);
-    }
-
-    return {
-      hasErrors: errors.length > 0,
-      mapping,
-      places: placesArray
-    };
-  },
   [CLEAR_CURRENT]: () => ({
     current: null
   }),
@@ -66,15 +46,34 @@ const actionHandlers = {
   [CLOSED_CURRENT]: (action, state) => ({
     current: Object.assign({}, state.current, { isOpen: false })
   }),
+  [CONFIRM_ANSWER]: (action, state) => {
+    const { place } = action;
+    let { mapping, places } = state;
+
+    const entry = mapping[place.id] || { index: places.length };
+    entry.place = place;
+
+    mapping = Object.assign({}, mapping, {
+      [place.id]: entry
+    });
+    places = places.slice();
+    places.splice(entry.index, 1, place);
+
+    return {
+      mapping,
+      places
+    };
+  },
+  [FAIL]: (action) => ({
+    hasErrors: action.errors.length > 0
+  }),
   [OPENED_CURRENT]: (action, state) => ({
-    hasErrors: action.errors.length > 0,
     current: Object.assign({}, state.current, {
-      isOpen: action.place != null,
+      isOpen: true,
       place: action.place
     })
   }),
   [RECEIVE_PLACES]: (action) => ({
-    hasErrors: action.errors.length > 0,
     isFetching: false,
     mapping: action.places.reduce((mapping, place, index) => {
       mapping[place.id] = {
@@ -91,6 +90,9 @@ const actionHandlers = {
     hasErrors: false,
     isFetching: true,
     query: action.query
+  }),
+  [SEND_ANSWER]: () => ({
+    hasErrors: false
   }),
   [SET_CURRENT]: (action) => ({
     current: {
@@ -121,12 +123,9 @@ function places(
     mapping: {},
     marker: null,
     places: [],
-    position: {
-      lat: 56.074968,
-      lng: -3.4633847
-    },
+    position: [ 56.074968, -3.4633847 ],
     query: {
-      dominant: 'yes'
+      dominant: true
     },
     zoom: 8
   },

@@ -22,13 +22,15 @@
 
 import * as places from '../api/places';
 
-export const ANSWER = 'ANSWER';
 export const CLEAR_CURRENT = 'CLEAR_CURRENT';
 export const CLEAR_MARKER = 'CLEAR_MARKER';
 export const CLOSED_CURRENT = 'CLOSED_CURRENT';
+export const CONFIRM_ANSWER = 'CONFIRM_ANSWER';
+export const FAIL = 'FAIL';
 export const OPENED_CURRENT = 'OPENED_CURRENT';
 export const RECEIVE_PLACES = 'RECEIVE_PLACES';
 export const REQUEST_PLACES = 'REQUEST_PLACES';
+export const SEND_ANSWER = 'SEND_ANSWER';
 export const SET_CURRENT = 'SET_CURRENT';
 export const SET_MARKER = 'SET_MARKER';
 export const SET_POSITION = 'SET_POSITION';
@@ -36,17 +38,11 @@ export const SET_ZOOM = 'SET_ZOOM';
 
 export function addAnswer(id, value) {
   return async(dispatch) => {
-    const result = await places.addAnswer(id, { value });
+    dispatch(sendAnswer());
 
-    dispatch(answer(result));
-  };
-}
+    const result = await places.addAnswer(id, { answer: value });
 
-function answer(result) {
-  return {
-    type: ANSWER,
-    errors: result.errors || [],
-    place: result.data ? result.data.place : null
+    dispatch(handleErrors(result, () => confirmAnswer(result)));
   };
 }
 
@@ -79,24 +75,50 @@ function closedCurrent() {
   };
 }
 
+function confirmAnswer(result) {
+  return {
+    type: CONFIRM_ANSWER,
+    place: result
+  };
+}
+
+export function fail(errors) {
+  return {
+    type: FAIL,
+    errors: errors || []
+  };
+}
+
 export function findPlaces(query) {
   return async(dispatch) => {
     dispatch(requestPlaces(query));
 
     const result = await places.find(query);
 
-    dispatch(receivePlaces(query, result));
+    dispatch(handleErrors(result, () => receivePlaces(query, result)));
   };
 }
 
 export function getPosition() {
   return (dispatch) => {
     if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => dispatch(setPosition(position.coords))
-      );
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+
+        dispatch(setPosition([ latitude, longitude ]))
+      });
     }
   };
+}
+
+function handleErrors(result, actionProvider) {
+  const { errors } = result;
+
+  if (errors && errors.length) {
+    return fail(errors);
+  }
+
+  return actionProvider(result);
 }
 
 export function openCurrent() {
@@ -107,29 +129,23 @@ export function openCurrent() {
       return;
     }
 
-    const result = current.place ? {
-      data: {
-        place: current.place
-      }
-    } : await places.findById(current.id, { expand: true });
+    const result = current.place || await places.findById(current.id, { expand: true });
 
-    dispatch(openedCurrent(result));
+    dispatch(handleErrors(result, () => openedCurrent(result)));
   };
 }
 
 function openedCurrent(result) {
   return {
     type: OPENED_CURRENT,
-    errors: result.errors || [],
-    place: result.data ? result.data.place : null
+    place: result
   };
 }
 
 function receivePlaces(query, result) {
   return {
     type: RECEIVE_PLACES,
-    errors: result.errors || [],
-    places: (result.data && result.data.places) || [],
+    places: result.content || [],
     query
   };
 }
@@ -141,14 +157,17 @@ function requestPlaces(query) {
   };
 }
 
+function sendAnswer() {
+  return {
+    type: SEND_ANSWER
+  };
+}
+
 export function setCurrent(id, position) {
   return {
     type: SET_CURRENT,
     id,
-    position: {
-      lat: position.lat != null ? position.lat : position.latitude,
-      lng: position.lng != null ? position.lng : position.longitude
-    }
+    position: position.slice()
   };
 }
 
@@ -156,20 +175,14 @@ export function setMarker(id, position) {
   return {
     type: SET_MARKER,
     id,
-    position: {
-      lat: position.lat != null ? position.lat : position.latitude,
-      lng: position.lng != null ? position.lng : position.longitude
-    }
+    position: position.slice()
   };
 }
 
 export function setPosition(position) {
   return {
     type: SET_POSITION,
-    position: {
-      lat: position.lat != null ? position.lat : position.latitude,
-      lng: position.lng != null ? position.lng : position.longitude
-    }
+    position: position.slice()
   };
 }
 

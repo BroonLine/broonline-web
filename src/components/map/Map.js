@@ -60,14 +60,15 @@ const InternalMap = withScriptjs(withGoogleMap(({
   searchRefProvider,
   zoom
 }) => {
+  // TODO: Only display dominant=true on heatmap etc
   const data = places.map((place) => {
-    return new google.maps.LatLng(place.position.latitude, place.position.longitude);
+    return new google.maps.LatLng(place.position[0], place.position[1]);
   });
 
   return (
     <GoogleMap
       ref={googleMapRefProvider}
-      center={position}
+      center={{ lat: position[0], lng: position[1] }}
       defaultOptions={{
         fullscreenControl: false,
         mapTypeControl: false
@@ -129,13 +130,13 @@ const InternalMap = withScriptjs(withGoogleMap(({
       />
       {current && (!marker || marker.id !== current.id) && current.isOpen && <InfoWindow
         onCloseClick={onCurrentClose}
-        position={current.position}
+        position={{ lat: current.position[0], lng: current.position[1] }}
       >
         <PlaceInfo place={current.place} />
       </InfoWindow>}
       {marker && <Marker
         onClick={onMarkerClick}
-        position={marker.position}
+        position={{ lat: marker.position[0], lng: marker.position[1] }}
       >
         {current && current.id === marker.id && current.isOpen && <InfoWindow onCloseClick={onMarkerClick}>
           <PlaceInfo place={current.place} />
@@ -151,20 +152,14 @@ InternalMap.propTypes = {
   current: PropTypes.shape({
     id: PropTypes.string.isRequired,
     isOpen: PropTypes.bool.isRequired,
-    position: PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lng: PropTypes.number.isRequired
-    }).isRequired,
+    position: PropTypes.arrayOf(PropTypes.number).isRequired,
     place: PropTypes.object
   }),
   googleMapRefProvider: PropTypes.func,
   heatmapRefProvider: PropTypes.func,
   marker: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    position: PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lng: PropTypes.number.isRequired
-    }).isRequired
+    position: PropTypes.arrayOf(PropTypes.number).isRequired
   }),
   onClear: PropTypes.func,
   onCurrentClose: PropTypes.func,
@@ -173,10 +168,7 @@ InternalMap.propTypes = {
   onSearch: PropTypes.func,
   placeholder: PropTypes.string.isRequired,
   places: PropTypes.array,
-  position: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired
-  }),
+  position: PropTypes.arrayOf(PropTypes.number),
   searchRefProvider: PropTypes.func,
   zoom: PropTypes.number
 };
@@ -206,7 +198,7 @@ class Map extends Component {
   componentDidMount() {
     const { findPlaces, getPosition } = this.props;
 
-    findPlaces({ dominant: 'yes' });
+    findPlaces({ dominant: true });
     getPosition();
   }
 
@@ -238,10 +230,7 @@ class Map extends Component {
     const { clearCurrent, closeCurrent, openCurrent, places, setCurrent } = this.props;
     const { current } = places;
     const { latLng: location } = event;
-    const position = {
-      lat: location.lat(),
-      lng: location.lng()
-    };
+    const position = [ location.lat(), location.lng() ];
 
     if (current) {
       if (current.id !== placeId) {
@@ -298,10 +287,7 @@ class Map extends Component {
       clearMarker();
     } else {
       const { location } = place.geometry;
-      const position = {
-        lat: location.lat(),
-        lng: location.lng()
-      };
+      const position = [ location.lat(), location.lng() ];
 
       if (!marker || marker.id !== place.place_id) {
         clearCurrent();
