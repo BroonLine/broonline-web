@@ -60,30 +60,77 @@
   margin: 15px;
 }
 
-.navbar__link {
-  color: #777777;
-  margin-left: 10px;
+.navbar__dropdown {
+  position: relative;
+  display: inline-block;
 }
-.navbar__link[data-name='facebook']:hover {
+
+.navbar__dropdown_menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: none;
+  min-width: 3rem;
+  padding: 5px 0;
+  margin: 10px 0 0 -3px;
+  text-align: center;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 2px solid #a0522d;
+  border-top: none;
+}
+
+.navbar__dropdown_item {
+  display: block;
+  color: #777;
+  width: 100%;
+  padding: 5px 10px;
+  clear: both;
+  font-weight: 400;
+  text-align: inherit;
+  white-space: nowrap;
+  border: 0;
+}
+
+.navbar__dropdown--open .navbar__dropdown_menu {
+  display: block;
+}
+
+.navbar__link {
+  color: #777;
+  margin-left: 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+.navbar__link:hover,
+.navbar__dropdown_item:hover {
+  color: #a0522d;
+}
+.navbar__dropdown_item[data-name='facebook']:hover {
   color: #3b5998;
 }
-.navbar__link[data-name='github']:hover {
+.navbar__dropdown_item[data-name='github']:hover {
   color: #171515;
 }
-.navbar__link[data-name='googleplus']:hover {
+.navbar__dropdown_item[data-name='googleplus']:hover {
   color: #dd4b39;
 }
-.navbar__link[data-name='info']:hover {
+.navbar__dropdown_item[data-name='info']:hover {
   color: #5bc0de;
 }
-.navbar__link[data-name='stumbleupon']:hover {
+.navbar__dropdown_item[data-name='stumbleupon']:hover {
   color: #eb4823;
+}
+.navbar__dropdown_item[data-name='twitter']:hover {
+  color: #55acee;
 }
 .navbar__link[data-name='support']:hover {
   color: #d9534f;
-}
-.navbar__link[data-name='twitter']:hover {
-  color: #55acee;
 }
 
 @media (min-width: 768px) {

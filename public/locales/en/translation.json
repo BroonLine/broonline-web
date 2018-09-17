@@ -36,6 +36,10 @@
         "text": "StumbleUpon",
         "title": "Share on $t(navbar.link.stumbleupon.text)"
       },
+      "social": {
+        "text": "Social",
+        "title": "Share on social media"
+      },
       "support": {
         "text": "Support",
         "title": "Need help?"

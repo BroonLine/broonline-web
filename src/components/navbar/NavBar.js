@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -35,7 +36,7 @@ import './NavBar.css';
 class NavLink extends Component {
 
   render() {
-    const { href, icon, internal, name, t } = this.props;
+    const { className, href, icon, internal, name, t } = this.props;
     const text = t(`navbar.link.${name}.text`);
     const title = t(`navbar.link.${name}.title`);
     let rel;
@@ -48,7 +49,7 @@ class NavLink extends Component {
 
     return (
       <a
-        className="navbar__link"
+        className={className || 'navbar__link'}
         href={href}
         rel={rel}
         target={target}
@@ -64,12 +65,85 @@ class NavLink extends Component {
 }
 
 NavLink.propTypes = {
+  className: PropTypes.string,
   href: PropTypes.string.isRequired,
   icon: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.string
   ]).isRequired,
   internal: PropTypes.bool,
+  name: PropTypes.string.isRequired,
+  t: PropTypes.func.isRequired
+};
+
+class NavDropdown extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = { isOpen: false };
+
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    this.setState((prevState) => ({
+      isOpen: !prevState.isOpen
+    }));
+  }
+
+  render() {
+    const { icon, links, name, t } = this.props;
+    const { isOpen } = this.state;
+    const text = t(`navbar.link.${name}.text`);
+    const title = t(`navbar.link.${name}.title`);
+
+    return (
+      <div
+        className={classNames('navbar__dropdown', `navbar__dropdown--${isOpen ? 'open' : 'closed'}`)}
+      >
+        <button
+          className="navbar__link"
+          title={title}
+          data-name={name}
+          aria-haspopup={true}
+          aria-expanded={isOpen}
+          onClick={this.onClick}
+        >
+          <FontAwesomeIcon icon={icon} size="2x" />
+          <ScreenReaderOnly>{text}</ScreenReaderOnly>
+        </button>
+        <div className="navbar__dropdown_menu">
+          {links.map((link) => <NavLink
+            key={link.name}
+            className="navbar__dropdown_item"
+            href={link.href}
+            icon={link.icon}
+            internal={link.internal}
+            name={link.name}
+            t={t}
+          />)}
+        </div>
+      </div>
+    );
+  }
+
+}
+
+NavDropdown.propTypes = {
+  icon: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string
+  ]).isRequired,
+  links: PropTypes.arrayOf(PropTypes.shape({
+    href: PropTypes.string.isRequired,
+    icon: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.string),
+      PropTypes.string
+    ]).isRequired,
+    internal: PropTypes.bool,
+    name: PropTypes.string.isRequired,
+  })).isRequired,
   name: PropTypes.string.isRequired,
   t: PropTypes.func.isRequired
 };
@@ -82,11 +156,16 @@ class NavBar extends Component {
     const encHost = encodeURIComponent(host);
 
     this.links = [
-      { name: 'twitter', href: `https://twitter.com/intent/tweet?status=${encHost}`, icon: [ 'fab', 'twitter-square' ] },
-      { name: 'facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${encHost}`, icon: [ 'fab', 'facebook-square' ] },
-      { name: 'googleplus', href: `https://plus.google.com/share?url=${encHost}`, icon: [ 'fab', 'google-plus' ] },
-      { name: 'stumbleupon', href: `https://www.stumbleupon.com/submit?url=${encHost}`, icon: [ 'fab', 'stumbleupon-circle' ] },
-      { name: 'github', href: 'https://github.com/BroonLine', icon: [ 'fab', 'github' ] },
+      {
+        name: 'social',
+        icon: 'share-alt',
+        links: [
+          { name: 'twitter', href: `https://twitter.com/intent/tweet?status=${encHost}`, icon: [ 'fab', 'twitter-square' ] },
+          { name: 'facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${encHost}`, icon: [ 'fab', 'facebook-square' ] },
+          { name: 'googleplus', href: `https://plus.google.com/share?url=${encHost}`, icon: [ 'fab', 'google-plus' ] },
+          { name: 'stumbleupon', href: `https://www.stumbleupon.com/submit?url=${encHost}`, icon: [ 'fab', 'stumbleupon-circle' ] }
+        ]
+      },
       { name: 'support', href: 'https://thebroonline.freshdesk.com', icon: 'life-ring' }
     ];
   }
@@ -101,14 +180,26 @@ class NavBar extends Component {
         </div>
 
         <div className="navbar__links">
-          {this.links.map((link) => <NavLink
-            key={link.name}
-            href={link.href}
-            icon={link.icon}
-            internal={link.internal}
-            name={link.name}
-            t={t}
-          />)}
+          {this.links.map((link) => {
+            return link.links ? (
+              <NavDropdown
+                key={link.name}
+                icon={link.icon}
+                links={link.links}
+                name={link.name}
+                t={t}
+              />
+            ) : (
+              <NavLink
+                key={link.name}
+                href={link.href}
+                icon={link.icon}
+                internal={link.internal}
+                name={link.name}
+                t={t}
+              />
+            );
+          })}
         </div>
       </nav>
     );
